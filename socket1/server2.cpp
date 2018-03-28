@@ -29,7 +29,7 @@ using  namespace std;
     memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
  
     stSockAddr.sin_family = AF_INET;
-    stSockAddr.sin_port = htons(333);
+    stSockAddr.sin_port = htons(122);
     stSockAddr.sin_addr.s_addr = INADDR_ANY;
  
     if(-1 == bind(SocketFD,(const struct sockaddr *)&stSockAddr, sizeof(struct sockaddr_in)))
@@ -69,19 +69,19 @@ using  namespace std;
         cout<<msg<<endl;
         write(ConnectFD,msg.c_str(),msg.size());
 */      
-          cin>>msg2;
-      write(ConnectFD,msg2.c_str(),msg2.size());
+        cin>>msg2;
+        write(ConnectFD,msg2.c_str(),msg2.size());
 
         //
         bzero(buffer,1000);
-        cout<<"bucle"<<endl;
+        //cout<<"bucle"<<endl;
        n = read(ConnectFD,buffer,1000);
        if (n < 0) perror("ERROR reading from socket");
        //cout<<"cliente dice: "<<buffer<<endl;
-       printf("cliente: [%s]\n",buffer);
+       printf("cliente dice: [%s]\n",buffer);
        //n = write(ConnectFD,"server",6);
        //if (n < 0) perror("ERROR writing to socket");
-      
+       //read(SocketFD,buffer,256);
 
       }while(msg!="exit");
 
