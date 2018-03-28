@@ -1,11 +1,11 @@
-  #include <sys/types.h>
-  #include <sys/socket.h>
-  #include <netinet/in.h>
-  #include <arpa/inet.h>
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <string.h>
-  #include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <bits/stdc++.h>
 using  namespace std; 
   int main(void)
@@ -27,7 +27,7 @@ using  namespace std;
  
     stSockAddr.sin_family = AF_INET;
     stSockAddr.sin_port = htons(333);
-    Res = inet_pton(AF_INET, "192.168.164.62", &stSockAddr.sin_addr);
+    Res = inet_pton(AF_INET, "192.168.3.129", &stSockAddr.sin_addr);
  
     if (0 > Res)
     {
