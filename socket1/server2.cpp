@@ -10,7 +10,17 @@
   #include <unistd.h>
 #include <iostream>
 #include <bits/stdc++.h>
-using  namespace std; 
+using  namespace std;
+
+void my_write(int SocketFD,string msg){
+  int tam=msg.size();
+  msg= to_string(tam)+msg;
+  //cout<<msg<<endl;
+  //int my_size=atoi(msg.c_str());             //mi tamanio al inicio de la cadena
+  //cout<<my_size<<endl;
+  write(SocketFD,msg.c_str(),msg.size());
+
+} 
   
   int main(void)
   {
@@ -70,7 +80,8 @@ using  namespace std;
         write(ConnectFD,msg.c_str(),msg.size());
 */      
         cin>>msg2;
-        write(ConnectFD,msg2.c_str(),msg2.size());
+        my_write(ConnectFD,msg2.c_str());
+        //write(ConnectFD,msg2.c_str(),msg2.size());
 
         //
         bzero(buffer,1000);

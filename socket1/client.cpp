@@ -9,8 +9,17 @@
 #include <bits/stdc++.h>
 using  namespace std; 
 
-void my_read(int SocketFD,char* buffer,int size){
-  read(SocketFD,buffer,size);
+void my_read(int SocketFD,char* buffer){
+  int my_size=atoi(buffer);
+  /*int len=sizeof(buffer)/sizeof(char);
+  string msg = string(buffer);
+  cout<<"estoy leyendo "<<msg<<endl;
+  if (msg!=""){
+      msg=msg.substr(len-my_size-1,my_size);
+      const  char * buff=msg.c_str();
+  }*/
+  read(SocketFD,buffer,255);
+  printf("servidor dice: [%s]\n",buffer);
 }
 void my_write(int SocketFD,string msg){
   int tam=msg.size();
@@ -41,7 +50,7 @@ void my_write(int SocketFD,string msg){
  
     stSockAddr.sin_family = AF_INET;
     stSockAddr.sin_port = htons(122);
-    Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
+    Res = inet_pton(AF_INET, "192.168.161.168", &stSockAddr.sin_addr);
  
     if (0 > Res)
     {
@@ -67,12 +76,11 @@ void my_write(int SocketFD,string msg){
       cin>>msg;
       my_write(SocketFD,msg);
       //n = read(SocketFD,buffer,1000);
-
-      my_read(SocketFD,buffer,225);
-      //read(SocketFD,buffer,256);
+      my_read(SocketFD,buffer);
+      //read(SocketFD,buffer,255);
       // if (n < 0) perror("ERROR writing to socket");
       
-     printf("servidor dice: [%s]\n",buffer);
+      //printf("servidor dice: [%s]\n",buffer);
       //read(SocketFD,buffer,256);
 
 
