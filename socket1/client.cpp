@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <bits/stdc++.h>
+#include <thread>
 using  namespace std; 
 
 void my_read(int SocketFD,char* buffer,int size){
@@ -14,7 +15,7 @@ void my_read(int SocketFD,char* buffer,int size){
 }
 void my_write(int SocketFD,string msg){
   int tam=msg.size();
-  msg= to_string(tam)+msg;
+  msg=to_string(tam)+msg;
   //cout<<msg<<endl;
   //int my_size=atoi(msg.c_str());             //mi tamanio al inicio de la cadena
   //cout<<my_size<<endl;
@@ -40,8 +41,8 @@ void my_write(int SocketFD,string msg){
     memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
  
     stSockAddr.sin_family = AF_INET;
-    stSockAddr.sin_port = htons(333);
-    Res = inet_pton(AF_INET, "192.168.3.129", &stSockAddr.sin_addr);
+    stSockAddr.sin_port = htons(331);
+    Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
  
     if (0 > Res)
     {
@@ -68,11 +69,11 @@ void my_write(int SocketFD,string msg){
       my_write(SocketFD,msg);
       //n = read(SocketFD,buffer,1000);
 
-      my_read(SocketFD,buffer,225);
+      //my_read(SocketFD,buffer,16);
       //read(SocketFD,buffer,256);
       // if (n < 0) perror("ERROR writing to socket");
       
-     printf("servidor dice: [%s]\n",buffer);
+      printf("servidor dice: [%s]\n",buffer);
       //read(SocketFD,buffer,256);
 
 
