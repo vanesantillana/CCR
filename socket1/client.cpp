@@ -9,11 +9,18 @@
 #include <bits/stdc++.h>
 #include <thread>
 using  namespace std; 
+char buffer[24];
 
-void my_read(int SocketFD,char* buffer,int size){
-  read(SocketFD,buffer,size);
+void my_read(int SocketFD){  
+  while(1){    
+    bzero(buffer,24);
+    int n=read(SocketFD,buffer,24);
+    printf("servidor dice: [%s]\n",buffer);
+  }
 }
-void my_write(int SocketFD,string msg){
+void my_write(int SocketFD){
+  string msg;
+  cin>>msg;
   int tam=msg.size();
   msg=to_string(tam)+msg;
   //cout<<msg<<endl;
@@ -27,7 +34,7 @@ void my_write(int SocketFD,string msg){
   {
     struct sockaddr_in stSockAddr;
     int Res,Res1;
-    char buffer[256];
+    //char buffer[256];
     int SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     int n;
     string msg;
@@ -41,7 +48,7 @@ void my_write(int SocketFD,string msg){
     memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
  
     stSockAddr.sin_family = AF_INET;
-    stSockAddr.sin_port = htons(331);
+    stSockAddr.sin_port = htons(336);
     Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
  
     if (0 > Res)
@@ -64,20 +71,16 @@ void my_write(int SocketFD,string msg){
       exit(EXIT_FAILURE);
     }
 
+    thread t[2];
+    t[0]=thread(my_read,SocketFD);
     do{
-      cin>>msg;
-      my_write(SocketFD,msg);
-      //n = read(SocketFD,buffer,1000);
-
-      //my_read(SocketFD,buffer,16);
-      //read(SocketFD,buffer,256);
-      // if (n < 0) perror("ERROR writing to socket");
+      t[1]=thread(my_write,SocketFD);
       
-      printf("servidor dice: [%s]\n",buffer);
-      //read(SocketFD,buffer,256);
-
-
+      t[1].join();
     }while(msg!="exit");
+    t[0].join();
+    
+    //t[0].join();
 
     /*n = write(SocketFD,"exit",4);
     bzero(buffer,256);

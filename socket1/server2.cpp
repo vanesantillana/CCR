@@ -10,18 +10,21 @@
 #include <bits/stdc++.h>
 #include <thread>
 using  namespace std; 
-char buffer[1000];
+char buffer[24];
 void writePrueba(int ConnectFD){
-  string msg2;
-  cin>>msg2;
-  write(ConnectFD,msg2.c_str(),msg2.size()); 
+  while(1){    
+    string msg2;
+    cin>>msg2;
+    write(ConnectFD,msg2.c_str(),msg2.size()); 
+  }
 }
 
 void readPrueba(int ConnectFD){
-    bzero(buffer,256);
+  while(1){
+    bzero(buffer,24);
     int n = read(ConnectFD,buffer,24);
     printf("cliente dice: [%s]\n",buffer);
-    
+  }
   
 }
 int main(void){
@@ -40,7 +43,7 @@ int main(void){
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
   
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(331);
+  stSockAddr.sin_port = htons(336);
   stSockAddr.sin_addr.s_addr = INADDR_ANY;
   
   if(-1 == bind(SocketFD,(const struct sockaddr *)&stSockAddr, sizeof(struct sockaddr_in)))
@@ -67,14 +70,17 @@ int main(void){
       close(SocketFD);
       exit(EXIT_FAILURE);
     }
-    while(1){
-      t[0]=thread(writePrueba,ConnectFD);
-      t[1]=thread(readPrueba,ConnectFD);  
-      t[1].join();
-      
-    }
+    
+    t[1]=thread(readPrueba,ConnectFD);
+    t[0]=thread(writePrueba,ConnectFD);
     t[0].join();
-   
+    
+    t[1].join();
+    
+    //t[1]=thread(readPrueba,ConnectFD);  
+    //t[1].join();
+    
+    
     shutdown(ConnectFD, SHUT_RDWR);
     //close(ConnectFD);
      
