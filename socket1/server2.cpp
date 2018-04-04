@@ -9,6 +9,7 @@
 #include <iostream>
 #include <bits/stdc++.h>
 #include <thread>
+//g++ client.cpp -o cli -std=c++11 -pthread
 using  namespace std; 
 char buffer[24];
 void writePrueba(int ConnectFD){
