@@ -84,7 +84,7 @@ int main(void){
     shutdown(ConnectFD, SHUT_RDWR);
     //close(ConnectFD);
      
-    }
+  }
   
   close(SocketFD);
   return 0;
