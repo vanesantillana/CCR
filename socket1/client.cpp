@@ -28,13 +28,20 @@ void my_write(int SocketFD){
     cin>>msg;
     int tam=msg.size();
     msg=to_string(tam)+msg;
+    
     //cout<<msg<<endl;
     //int my_size=atoi(msg.c_str());             //mi tamanio al inicio de la cadena
     //cout<<my_size<<endl;
     write(SocketFD,msg.c_str(),msg.size());
   }
 }
-
+int complete_zero(string size){
+  int tam=size.size();
+  for(int i=tam;i<=4;++i){
+    size="0"+size;
+  }
+  return size;
+}
 int main(void)
 {
   struct sockaddr_in stSockAddr;
