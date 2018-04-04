@@ -15,6 +15,10 @@ void my_read(int SocketFD){
   while(1){    
     bzero(buffer,24);
     int n=read(SocketFD,buffer,24);
+    char *arr_ptr = &buffer[0];
+    for(int x=0;x<strlen(arr_ptr);x++){
+      cout<<buffer[x]<<endl;
+    }
     printf("servidor dice: [%s]\n",buffer);
   }
 }
