@@ -31,6 +31,24 @@ void my_read(int SocketFD){
   }
 }
 
+void my_read2(int SocketFD){  
+  char buffer[size];
+    
+  int n=read(SocketFD,buffer,nbytes);
+  if (n < 0) perror("error reading size");
+  int my_size = atoi(buffer);
+  
+  n = read(SocketFD, buffer, my_size);
+  if (n < 0) perror("error reading message");
+  
+  cout<<"Msg recibido: [";
+  for (int i = 0; i < my_size; i++)
+    cout << buffer[i];
+  cout<<"]"<<endl;
+  
+}
+
+
 string complete_zero(int size,int nbytes){
   string str_size=to_string(size);
   int tam=str_size.size();

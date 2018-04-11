@@ -10,14 +10,16 @@
 #include <bits/stdc++.h>
 #include <thread>
 #include "f.h"
+using  namespace std; 
 
-
-void nuevoUsuario(int SocketFD){
-
+void nuevoUsuario( int ConnectFD){
+    string menu="\nMENU\n 1-[Action P] Print list of user on the chat\n 2. [Action L] Login to the chat\n 5. [Action C] Send a msg to an user on the chat\n 6. [Action E]End chat or logout from chat \n";
+    my_write2(ConnectFD,menu);
+    my_read2(ConnectFD);
+    while(1);
 }
 
 //g++ client.cpp -o cli -std=c++11 -pthread
-using  namespace std; 
 
 int main(void){
   struct sockaddr_in stSockAddr;
@@ -50,37 +52,25 @@ int main(void){
       close(SocketFD);
       exit(EXIT_FAILURE);
     }
+
   
   map<char,int> users;
-  thread t[2];
-
-
-
+  
+  thread t[10];
+  int cont=0;
   for(;;){
     int ConnectFD = accept(SocketFD, NULL, NULL);
-    
-    if(0 > ConnectFD){
-      perror("error accept failed");
-      close(SocketFD);
-      exit(EXIT_FAILURE);
-    }
-    string menu="\nMENU\n 1-[Action P] Print list of user on the chat\n 2. [Action L] Login to the chat\n 5. [Action C] Send a msg to an user on the chat\n 6. [Action E]End chat or logout from chat \n";
-    my_write2(ConnectFD,menu);
-    
-    t[1]=thread(my_read,ConnectFD);
-    t[0]=thread(my_write,ConnectFD);
-    t[0].join();
-    
-    t[1].join();
-    
-    //t[1]=thread(readPrueba,ConnectFD);  
-    //t[1].join();
-    
-    
-    shutdown(ConnectFD, SHUT_RDWR);
+    t[cont]=thread(nuevoUsuario,ConnectFD);
+  }
+  //shutdown(ConnectFD, SHUT_RDWR);
+  for(int tr=0;tr<cont;tr++){
+    t[tr].join();
+  }
+  //t1[0]=thread(nuevoUsuario,SocketFD);
+
     //close(ConnectFD);
      
-  }
+  
   
   close(SocketFD);
   return 0;
