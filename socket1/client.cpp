@@ -8,40 +8,9 @@
 #include <unistd.h>
 #include <bits/stdc++.h>
 #include <thread>
+#include "f.h"
 using  namespace std; 
 char buffer[24];
-
-void my_read(int SocketFD){  
-  while(1){    
-    bzero(buffer,24);
-    int n=read(SocketFD,buffer,24);
-    char *arr_ptr = &buffer[0];
-    for(int x=0;x<strlen(arr_ptr);x++){
-      cout<<buffer[x]<<endl;
-    }
-    printf("servidor dice: [%s]\n",buffer);
-  }
-}
-void my_write(int SocketFD){
-  while(1){
-    string msg;
-    cin>>msg;
-    int tam=msg.size();
-    msg=to_string(tam)+msg;
-    
-    //cout<<msg<<endl;
-    //int my_size=atoi(msg.c_str());             //mi tamanio al inicio de la cadena
-    //cout<<my_size<<endl;
-    write(SocketFD,msg.c_str(),msg.size());
-  }
-}
-int complete_zero(string size){
-  int tam=size.size();
-  for(int i=tam;i<=4;++i){
-    size="0"+size;
-  }
-  return size;
-}
 int main(void)
 {
   struct sockaddr_in stSockAddr;
@@ -60,7 +29,7 @@ int main(void)
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
  
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(336);
+  stSockAddr.sin_port = htons(338);
   Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
  
   if (0 > Res)
