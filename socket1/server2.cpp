@@ -16,7 +16,7 @@ void nuevoUsuario( int ConnectFD){
     string menu="\nMENU\n 1-[Action P] Print list of user on the chat\n 2. [Action L] Login to the chat\n 5. [Action C] Send a msg to an user on the chat\n 6. [Action E]End chat or logout from chat \n";
     my_write2(ConnectFD,menu);
     my_read2(ConnectFD);
-    while(1);
+    
 }
 
 //g++ client.cpp -o cli -std=c++11 -pthread
@@ -36,7 +36,7 @@ int main(void){
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
   
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(338);
+  stSockAddr.sin_port = htons(337);
   stSockAddr.sin_addr.s_addr = INADDR_ANY;
   
   if(-1 == bind(SocketFD,(const struct sockaddr *)&stSockAddr, sizeof(struct sockaddr_in)))
@@ -61,11 +61,10 @@ int main(void){
   for(;;){
     int ConnectFD = accept(SocketFD, NULL, NULL);
     t[cont]=thread(nuevoUsuario,ConnectFD);
+    cont++;
   }
   //shutdown(ConnectFD, SHUT_RDWR);
-  for(int tr=0;tr<cont;tr++){
-    t[tr].join();
-  }
+  
   
   //t1[0]=thread(nuevoUsuario,SocketFD);
 
