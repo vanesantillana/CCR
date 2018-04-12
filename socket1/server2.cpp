@@ -66,6 +66,7 @@ int main(void){
   for(int tr=0;tr<cont;tr++){
     t[tr].join();
   }
+  
   //t1[0]=thread(nuevoUsuario,SocketFD);
 
     //close(ConnectFD);
