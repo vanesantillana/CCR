@@ -10,39 +10,67 @@
 #include <bits/stdc++.h>
 #include <thread>
 #include "f.h"
+
 using  namespace std; 
-
-map<char,int> users;
+typedef map<string,int> StringMap;
+StringMap Users;
+string printMap(){
+  StringMap::iterator pos;
+  string lista="LISTA DE USUARIOS\n---------------------------\n";
+  StringMap::iterator it = Users.begin();
+  while(it != Users.end()){
+    lista=lista+it->first+"\n";
+    it++;
+  }
   
+  return lista;
+}
+
+
 void nuevoUsuario( int ConnectFD){
-    string menu="\nMENU\n 1-[Action P] Print list of user on the chat\n 2. [Action L] Login to the chat\n 5. [Action C] Send a msg to an user on the chat\n 6. [Action E]End chat or logout from chat \n";
-    char* buffer;
-    my_write2(ConnectFD,menu);
-    buffer=my_read2(ConnectFD);
-    cout<<"buffer:"<<buffer<<endl;
-    /*
-    if (buffer[4] == 'P'){
-      //string total_users = "Ana,Bob";
-        //cout <<"Usuarios ONLINE: "<<total_users<< endl;
-        //server = write_protocol_R(total_users);
-        //cout <<"Enviaste: " << server << endl;
-        //cin>>b;
-      cout<<"Pppppp"<<endl;
-    }
-      else if (buffer[4] == 'L')
-        read_protocol_L(buffer);
 
-      else if (buffer[4] == 'C')
-        read_protocol_C(buffer);
-
-      else if (buffer[4] == 'E')
-        cout << "Adios" << endl;
-    */
+string menu="\nMENU\n 1-[Action P] Print list of user on the chat\n 2. [Action L] Login to the chat\n 3. [Action C] Send a msg to an user on the chat\n 4. [Action E]End chat or logout from chat \n";
+ string mensaje=menu;
+ 
+ while(true){ 
+   char * buffer=new char[size];
+   my_write2(ConnectFD,mensaje);
+   my_read2(ConnectFD,buffer);
+   cout<<"bufer"<<buffer<<endl;
+   
+   if (buffer[4] == 'P'){ 
+     string nv= printMap();
+     mensaje=nv;
+   }
+   else if (buffer[4] == 'L'){
+     string nick=read_protocol_L(buffer);
+     Users[nick]=ConnectFD;
+     mensaje=menu;
+   }  
+   else if (buffer[4] == 'C'){
+     string nick,msj;
+     msj=read_protocol_C(buffer,nick);
+     if(Users[nick]){
+       my_write2(Users[nick],msj);
+     }
+     else
+       my_write2(ConnectFD,"No existe");
+     
+     //cout<<"nick:"<<nick<<endl;
+     //cout<<"msj:"<<msj<<endl;
+   }
+   
+   else if (buffer[4] == 'E'){
+     cout << "Adios" << endl;
+     }
+   
+ }
 }
 
 //g++ client.cpp -o cli -std=c++11 -pthread
 
 int main(void){
+  
   struct sockaddr_in stSockAddr;
   int SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);  
   int n;
@@ -57,7 +85,7 @@ int main(void){
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
   
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(337);
+  stSockAddr.sin_port = htons(336);
   stSockAddr.sin_addr.s_addr = INADDR_ANY;
   
   if(-1 == bind(SocketFD,(const struct sockaddr *)&stSockAddr, sizeof(struct sockaddr_in)))
