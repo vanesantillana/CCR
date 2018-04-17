@@ -51,6 +51,8 @@ void my_write2(int SocketFD,string msg){
   write(SocketFD,msg.c_str(),msg.size());
 }
 
+
+
 /////////////PROTOCOLOS/////////////
 
 int atoi_first_block(char *n_buffer){
@@ -118,21 +120,22 @@ string read_protocol_C(char * n_buffer,string &nick){
   return msg;
 }
 
+
 //Action R: Send a msg to a client
 string write_protocol_R(string msg){
-  cout << "Action R" << endl;
   string action = complete_zero(msg.size(),nbytes)+"R"+msg;
   return action;
 }
-
+ 
 void read_protocol_R(char * n_buffer){
   int msg_size=atoi_first_block(n_buffer);
+  //cout<<"buffer:"<<n_buffer<<endl;
   string temp;
   int cadena_size= 5 + msg_size;
   for (int i = 5; i < cadena_size; i++)
     temp =temp + n_buffer[i];
   string msg = temp;
-  cout<<"Mensaje: "<<msg<<endl;
+  cout<<msg<<endl;
 }
 
 // Action E: End chat or logout from chat 

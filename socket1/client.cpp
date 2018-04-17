@@ -14,17 +14,25 @@ using  namespace std;
 void my_read(int SocketFD){  
   while(1){    
     char buffer[size];
-    int n=read(SocketFD,buffer,nbytes);
+    int n=read(SocketFD,buffer,nbytes+1);
     if (n < 0) perror("error reading size");
     int my_size = atoi(buffer);
+    if(buffer[4]=='R'){
+      n = read(SocketFD, buffer, my_size);
+      if (n < 0) perror("error reading message");  
+      for (int i = 0; i < my_size; i++)
+	cout << buffer[i];
+      cout<<endl;
 
-    n = read(SocketFD, buffer, my_size);
-    if (n < 0) perror("error reading message");
+    }
+    else if(buffer[4]=='F'){
+      cout<<"FILEEEEEE"<<endl;
+    }
+    else if(buffer[4]=='E'){
+      cout<<"FIN"<<endl;
+      break;
+    }
     
-    cout<<"Msg recibido\n------------\n";
-    for (int i = 0; i < my_size; i++)
-        cout << buffer[i];
-    cout<<endl;
   }
 }
 
@@ -57,9 +65,11 @@ void my_write(int SocketFD){
       my_write2(SocketFD,wp_P);
     }
     else if(msg=="4"){
-      string wp_P=write_protocol_P();
+      string wp_P=write_protocol_E();
       cout<<wp_P<<endl;
       my_write2(SocketFD,wp_P);
+      //shutdown(SocketFD, SHUT_RDWR);
+      break;
     }
     
     //msg=complete_zero(msg.size(),nbytes) + msg; //Agrego mi tamanio a la cabeza del mensaje
@@ -117,8 +127,6 @@ int main(void)
   t[1].join();
   t[0].join();
     
-  //t[0].join();
-
   /*n = write(SocketFD,"exit",4);
     bzero(buffer,256);
     n = read(SocketFD,buffer,255);
