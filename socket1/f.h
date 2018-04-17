@@ -11,42 +11,27 @@
 #include <thread>
 using namespace std;
 
-int size=256;
+int size=1024;
 int nbytes=4;
 
-void my_read(int SocketFD){  
-  char buffer[size];
-  while(1){    
-    int n=read(SocketFD,buffer,nbytes);
-    if (n < 0) perror("error reading size");
-    int my_size = atoi(buffer);
-
-    n = read(SocketFD, buffer, my_size);
-    if (n < 0) perror("error reading message");
-    
-    cout<<"Msg recibido: [";
-    for (int i = 0; i < my_size; i++)
-        cout << buffer[i];
-    cout<<"]"<<endl;
+int getSize(char*buffer,int i,int f){
+  string msg="";
+  for(;i<f;i++){
+    msg+=buffer[i];
   }
+  return atoi(msg.c_str());
 }
 
-
-char* my_read2(int SocketFD){  
-  char buffer[size];
-  
+void my_read2(int SocketFD,char* &buffer){
   int n=read(SocketFD,buffer,nbytes);
   if (n < 0) perror("error reading size");
   int my_size = atoi(buffer);
-  
   n = read(SocketFD, buffer, my_size);
-  if (n < 0) perror("error reading message");
-  
-  cout<<"Msg recibido: [";
+  if (n < 0) perror("error reading message");  
+  cout<<"Msg recibido\n------------\n";
   for (int i = 0; i < my_size; i++)
     cout << buffer[i];
-  cout<<"]"<<endl;
-  return buffer;
+  cout<<endl;
 }
 
 
@@ -66,6 +51,8 @@ void my_write2(int SocketFD,string msg){
   write(SocketFD,msg.c_str(),msg.size());
 }
 
+
+
 /////////////PROTOCOLOS/////////////
 
 int atoi_first_block(char *n_buffer){
@@ -84,18 +71,19 @@ string write_protocol_P(){
 
 //Action L: Login to the chat 
 string write_protocol_L(string nickname){
-  cout << "Action L" << endl;
+  //cout << "Action L" << endl;
   string action = complete_zero(nickname.size(),nbytes)+"L"+nickname;
   return action;
 }
-void read_protocol_L(char * n_buffer){
+string read_protocol_L(char * n_buffer){
   int nickname_size=atoi_first_block(n_buffer);
   string temp;
   int cadena_size= 5 + nickname_size;
   for (int i = 5; i < cadena_size; i++)
     temp =temp + n_buffer[i];
   string nickname = temp;
-  cout<<"Nickname: "<<nickname<<endl;
+  //cout<<"Nickname: "<<nickname<<endl;
+  return nickname;
 }
 
 
@@ -106,50 +94,48 @@ string write_protocol_C(string nickname, string msg){
                   complete_zero(nickname.size(),2) +nickname + msg;
   return action;
 }
-void read_protocol_C(char * n_buffer){
-  char buffer[size];
 
+string read_protocol_C(char * n_buffer,string &nick){
+  char buffer[size];
   int msg_size=atoi_first_block(n_buffer);
-  
   string temp;
   int cadena_size= 5 + 2; //total Bytes
   for (int i = 5; i < cadena_size; i++)
     temp =temp + n_buffer[i];
   int nickname_size = atoi(temp.c_str());
-
   temp="";
   cadena_size=7+nickname_size;
   for (int i = 7; i < cadena_size; i++)
         temp += n_buffer[i];
-
   string nickname = temp;
-  cout<<"Nickname: "<<nickname<<endl;
-
+  //cout<<"Nickname: "<<nickname<<endl;
+  nick=nickname;
   temp="";
   int size_temp=cadena_size;
   cadena_size= cadena_size + msg_size;
   for (int i = size_temp; i < cadena_size; i++)
-    temp += buffer[i];
+    temp += n_buffer[i];
   string msg = temp;
-  cout<<"Mensaje: "<<msg<<endl;
-
+  //cout<<"mensaje: "<<msg<<endl;
+  return msg;
 }
+
 
 //Action R: Send a msg to a client
 string write_protocol_R(string msg){
-  cout << "Action R" << endl;
   string action = complete_zero(msg.size(),nbytes)+"R"+msg;
   return action;
 }
-
+ 
 void read_protocol_R(char * n_buffer){
   int msg_size=atoi_first_block(n_buffer);
+  //cout<<"buffer:"<<n_buffer<<endl;
   string temp;
   int cadena_size= 5 + msg_size;
   for (int i = 5; i < cadena_size; i++)
     temp =temp + n_buffer[i];
   string msg = temp;
-  cout<<"Mensaje: "<<msg<<endl;
+  cout<<msg<<endl;
 }
 
 // Action E: End chat or logout from chat 
@@ -160,16 +146,3 @@ string write_protocol_E(){
 }
 
 
-void my_write(int SocketFD){
-  while(1){
-    string msg;
-    cin>>msg;
-    if(msg=="1"){
-      string wp_P=write_protocol_P();
-      cout<<wp_P<<endl;
-      my_write2(SocketFD,wp_P);
-    }
-    //msg=complete_zero(msg.size(),nbytes) + msg; //Agrego mi tamanio a la cabeza del mensaje
-    //write(SocketFD,msg.c_str(),msg.size());
-  }
-}
