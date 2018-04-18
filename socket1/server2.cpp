@@ -14,15 +14,11 @@
 using  namespace std; 
 StringMap Users;
 thread t[1000];
-void my_writeR(int SocketFD,string msg){
-  msg=write_protocol_R(msg); //Agrego mi tamanio a la cabeza del mensaje
-  write(SocketFD,msg.c_str(),msg.size());
-}
 
 
 string printMap(){
   StringMap::iterator pos;
-  string lista="\n+++++++++++++++++++++++++++\nLISTA DE USUARIOS\n";
+  string lista="+++++++++++++++++++++++++++\nLISTA DE USUARIOS\n";
   StringMap::iterator it = Users.begin();
   int cont=1;
   while(it != Users.end()){
@@ -31,30 +27,79 @@ string printMap(){
     it++;
     cont++;
   }
-  lista=lista+"+++++++++++++++++++++++++++\n";
+  lista=lista+"+++++++++++++++++++++++++++";
   return lista;
 }
 
 
 void nuevoUsuario( int ConnectFD){
   
-  string menu="----------------------------\nMENU\n 1. [Action P] Print list of user on the chat\n 2. [Action L] Login to the chat\n 3. [Action C] Send a msg to an user on the chat\n  4. [Action F] \n 5. [Action E]End chat or logout from chat\n 6. [Action E]End chat or logout from chat \n---------------------------\n";
+  string menu="\n----------------------------\nMENU\n 1. [Action P] Print list of user on the chat\n 2. [Action L] Login to the chat\n 3. [Action C] Send a msg to an user on the chat\n 4. [Action F] Send File \n 6. [Action E] End chat or logout from chat \n----------------------------";
   string mensaje;
- 
+  menu=write_protocol_R(menu);
+  
   while(true){ 
-   char * buffer=new char[size];
-   my_writeR(ConnectFD,menu);
-   my_read2(ConnectFD,buffer);
-   
-   if (buffer[4] == 'P'){ 
-     string nv= printMap();
-     my_writeR(ConnectFD,nv);
+   my_writeSimple(ConnectFD,menu);
+   int sizef;
+   char tipo=getTypeProtocol(ConnectFD,sizef);
+  
+   if (tipo == 'P'){ 
+     string nv= write_protocol_R(printMap());
+     my_writeSimple(ConnectFD,nv);
    }
-   else if (buffer[4] == 'L'){ 
-     string nick=read_protocol_L(buffer);
+   else if (tipo == 'L'){ 
+     string nick=read_protocol_L(ConnectFD,sizef);
      Users[nick]=ConnectFD;
-     //mensaje=menu;
+     string nv= write_protocol_R(printMap());
+     my_writeSimple(ConnectFD,nv);
+     
    }
+   else if (tipo == 'C'){
+     string nick,msj;
+     msj=read_protocol_C(ConnectFD,sizef,nick);
+
+     if(Users[nick]){
+       string newNick=findInMap(Users,ConnectFD);
+       msj=newNick+" dice: "+msj;
+       string nv= write_protocol_R(msj);
+       my_writeSimple(Users[nick],nv);
+     }
+     else{
+       string nv= write_protocol_R("No existe el usuario");
+       my_writeSimple(ConnectFD,nv);
+     }
+      
+   }
+   else if (tipo == 'E'){
+     //shutdown(ConnectFD, SHUT_RDWR);
+     my_writeSimple(ConnectFD,write_protocol_E());
+     string key=findInMap(Users,ConnectFD);
+     Users.erase(key);
+     close(ConnectFD);
+     break;
+   }
+   else if (tipo == 'F'){
+     string nick,msj;
+     string newNick=findInMap(Users,ConnectFD);
+     msj=read_protocol_D(ConnectFD,sizef,nick,newNick);
+     //cout<<"msj:"<<msj<<endl;
+     if(Users[nick]){
+       //msj=newNick+" dice: "+msj;
+       my_writeSimple(Users[nick],msj);
+     }
+     else{
+       string nv= write_protocol_R("No existe el usuario");
+       my_writeSimple(ConnectFD,nv);
+     }
+    
+
+     //cout<<"lego aqui"<<endl;
+     //msj=read_protocol_D(buffer,nick,newNick);
+
+     // my_write2(Users[nick],msj);
+   }
+   
+   /*
    else if (buffer[4] == 'F'){
      string nick,msj;
      //cout<<"lego aqui"<<endl;
@@ -63,18 +108,7 @@ void nuevoUsuario( int ConnectFD){
      my_write2(Users[nick],msj);
   
    }
-   else if (buffer[4] == 'C'){
-     string nick,msj;
-     msj=read_protocol_C(buffer,nick);
-     if(Users[nick]){
-       string newNick=findInMap(Users,ConnectFD);
-       msj=newNick+" dice: "+msj;
-       my_writeR(Users[nick],msj);
-     }
-     else
-       my_writeR(ConnectFD,"Usuario No existe");
-    
-   }
+   
    
    else if (buffer[4] == 'E'){
      //shutdown(ConnectFD, SHUT_RDWR);
@@ -83,9 +117,9 @@ void nuevoUsuario( int ConnectFD){
      Users.erase(key);
      close(ConnectFD);
      break;
-   }
+     }*/
    
- }
+  }
 }
 
 //g++ client.cpp -o cli -std=c++11 -pthread
@@ -106,7 +140,7 @@ int main(void){
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
   
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(332);
+  stSockAddr.sin_port = htons(344);
   stSockAddr.sin_addr.s_addr = INADDR_ANY;
   
   if(-1 == bind(SocketFD,(const struct sockaddr *)&stSockAddr, sizeof(struct sockaddr_in)))

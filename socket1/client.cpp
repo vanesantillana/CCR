@@ -12,24 +12,16 @@
 using  namespace std; 
 
 void my_read(int SocketFD){  
-  while(1){    
-    char buffer[size];
-    int n=read(SocketFD,buffer,nbytes+1);
-    cout<<"buffer recibido: "<<buffer<<endl;
-    if (n < 0) perror("error reading size");
-    int my_size = atoi(buffer);
-    if(buffer[4]=='R'){
-      n = read(SocketFD, buffer, my_size-1);
-      if (n < 0) perror("error reading message");  
-      for (int i = 0; i < my_size; i++)
-	cout << buffer[i];
-      cout<<endl;
-
+  while(1){
+    int sizef;
+    char tipo=getTypeProtocol(SocketFD,sizef);
+    if(tipo=='R'){
+      read_protocol_R(SocketFD,sizef);
     }
-    else if(buffer[4]=='F'){
-      cout<<"FILEEEEEE"<<endl;
+    else if(tipo=='F'){
+      read_protocol_F(SocketFD,sizef);
     }
-    else if(buffer[4]=='E'){
+    else if(tipo=='E'){
       cout<<"FIN"<<endl;
       break;
     }
@@ -44,8 +36,7 @@ void my_write(int SocketFD){
     cin>>msg;
     if(msg=="1"){
       string wp_P=write_protocol_P();
-      //cout<<wp_P<<endl;
-      my_write2(SocketFD,wp_P);
+      my_writeSimple(SocketFD,wp_P);
     }
     else if(msg=="2"){
       cout<<"usuario: ";
@@ -53,7 +44,7 @@ void my_write(int SocketFD){
       cin>>nombreUsuario;
       string wp_P=write_protocol_L(nombreUsuario);
       //cout<<wp_P<<endl;
-      my_write2(SocketFD,wp_P);
+      my_writeSimple(SocketFD,wp_P);
     }
     else if(msg=="3"){
       string msj,nick;
@@ -62,29 +53,26 @@ void my_write(int SocketFD){
       cout<<"mensaje: ";
       cin>>msj;
       string wp_P=write_protocol_C(nick,msj);
-      //cout<<wp_P<<endl;
-      my_write2(SocketFD,wp_P);
+      my_writeSimple(SocketFD,wp_P);
     }
     else if(msg=="4"){
       string nick,filename,file;
-      cout<<"nick: ";
+      cout<<"quien recibe: ";
       cin>>nick;
-      
-      filename="icon.png";
+      cout<<"archivo:";
+      cin>>filename;
       string wp_P=write_protocol_F(nick,filename);
-      my_write2(SocketFD,wp_P);
+      my_writeSimple(SocketFD,wp_P);
     }
-
+    
     else if(msg=="6"){
       string wp_P=write_protocol_E();
-      //cout<<wp_P<<endl;
-      my_write2(SocketFD,wp_P);
+      my_writeSimple(SocketFD,wp_P);
       //shutdown(SocketFD, SHUT_RDWR);
       break;
     }
+
     
-    //msg=complete_zero(msg.size(),nbytes) + msg; //Agrego mi tamanio a la cabeza del mensaje
-    //write(SocketFD,msg.c_str(),msg.size());
   }
 }
 
@@ -109,7 +97,7 @@ int main(void)
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
  
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(332);
+  stSockAddr.sin_port = htons(344);
   Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
  
   if (0 > Res)
