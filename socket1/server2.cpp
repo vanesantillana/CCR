@@ -12,7 +12,6 @@
 #include "f.h"
 
 using  namespace std; 
-typedef map<string,int> StringMap;
 StringMap Users;
 thread t[1000];
 void my_writeR(int SocketFD,string msg){
@@ -38,11 +37,11 @@ string printMap(){
 
 
 void nuevoUsuario( int ConnectFD){
-
-string menu="----------------------------\nMENU\n 1. [Action P] Print list of user on the chat\n 2. [Action L] Login to the chat\n 3. [Action C] Send a msg to an user on the chat\n 4. [Action E]End chat or logout from chat \n---------------------------\n";
- string mensaje;
+  
+  string menu="----------------------------\nMENU\n 1. [Action P] Print list of user on the chat\n 2. [Action L] Login to the chat\n 3. [Action C] Send a msg to an user on the chat\n  4. [Action F] \n 5. [Action E]End chat or logout from chat\n 6. [Action E]End chat or logout from chat \n---------------------------\n";
+  string mensaje;
  
- while(true){ 
+  while(true){ 
    char * buffer=new char[size];
    my_writeR(ConnectFD,menu);
    my_read2(ConnectFD,buffer);
@@ -51,16 +50,25 @@ string menu="----------------------------\nMENU\n 1. [Action P] Print list of us
      string nv= printMap();
      my_writeR(ConnectFD,nv);
    }
-   else if (buffer[4] == 'L'){
+   else if (buffer[4] == 'L'){ 
      string nick=read_protocol_L(buffer);
      Users[nick]=ConnectFD;
      //mensaje=menu;
-   }  
+   }
+   else if (buffer[4] == 'F'){
+     string nick,msj;
+     //cout<<"lego aqui"<<endl;
+     string newNick=findInMap(Users,ConnectFD);
+     msj=read_protocol_D(buffer,nick,newNick);
+     my_write2(Users[nick],msj);
+  
+   }
    else if (buffer[4] == 'C'){
      string nick,msj;
      msj=read_protocol_C(buffer,nick);
      if(Users[nick]){
-       msj=nick+" dice: "+msj;
+       string newNick=findInMap(Users,ConnectFD);
+       msj=newNick+" dice: "+msj;
        my_writeR(Users[nick],msj);
      }
      else
@@ -71,6 +79,8 @@ string menu="----------------------------\nMENU\n 1. [Action P] Print list of us
    else if (buffer[4] == 'E'){
      //shutdown(ConnectFD, SHUT_RDWR);
      my_write2(ConnectFD,"E");
+     string key=findInMap(Users,ConnectFD);
+     Users.erase(key);
      close(ConnectFD);
      break;
    }
@@ -96,7 +106,7 @@ int main(void){
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
   
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(336);
+  stSockAddr.sin_port = htons(332);
   stSockAddr.sin_addr.s_addr = INADDR_ANY;
   
   if(-1 == bind(SocketFD,(const struct sockaddr *)&stSockAddr, sizeof(struct sockaddr_in)))
@@ -125,13 +135,11 @@ int main(void){
   for(int h=0;h<cont;h++)
     t[h].join();
   
-  //shutdown(ConnectFD, SHUT_RDWR);
-  
-
-    //close(ConnectFD);
+  //shutdown(ConnectFD, SHUT_RDWR);  
+  //close(ConnectFD);
      
   
   
-  close(SocketFD);
+  //close(SocketFD);
   return 0;
 }

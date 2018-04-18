@@ -15,10 +15,11 @@ void my_read(int SocketFD){
   while(1){    
     char buffer[size];
     int n=read(SocketFD,buffer,nbytes+1);
+    cout<<"buffer recibido: "<<buffer<<endl;
     if (n < 0) perror("error reading size");
     int my_size = atoi(buffer);
     if(buffer[4]=='R'){
-      n = read(SocketFD, buffer, my_size);
+      n = read(SocketFD, buffer, my_size-1);
       if (n < 0) perror("error reading message");  
       for (int i = 0; i < my_size; i++)
 	cout << buffer[i];
@@ -43,7 +44,7 @@ void my_write(int SocketFD){
     cin>>msg;
     if(msg=="1"){
       string wp_P=write_protocol_P();
-      cout<<wp_P<<endl;
+      //cout<<wp_P<<endl;
       my_write2(SocketFD,wp_P);
     }
     else if(msg=="2"){
@@ -51,7 +52,7 @@ void my_write(int SocketFD){
       string nombreUsuario;
       cin>>nombreUsuario;
       string wp_P=write_protocol_L(nombreUsuario);
-      cout<<wp_P<<endl;
+      //cout<<wp_P<<endl;
       my_write2(SocketFD,wp_P);
     }
     else if(msg=="3"){
@@ -61,12 +62,22 @@ void my_write(int SocketFD){
       cout<<"mensaje: ";
       cin>>msj;
       string wp_P=write_protocol_C(nick,msj);
-      cout<<wp_P<<endl;
+      //cout<<wp_P<<endl;
       my_write2(SocketFD,wp_P);
     }
     else if(msg=="4"){
+      string nick,filename,file;
+      cout<<"nick: ";
+      cin>>nick;
+      
+      filename="icon.png";
+      string wp_P=write_protocol_F(nick,filename);
+      my_write2(SocketFD,wp_P);
+    }
+
+    else if(msg=="6"){
       string wp_P=write_protocol_E();
-      cout<<wp_P<<endl;
+      //cout<<wp_P<<endl;
       my_write2(SocketFD,wp_P);
       //shutdown(SocketFD, SHUT_RDWR);
       break;
@@ -98,7 +109,7 @@ int main(void)
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
  
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(336);
+  stSockAddr.sin_port = htons(332);
   Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
  
   if (0 > Res)
@@ -127,12 +138,7 @@ int main(void)
   t[1].join();
   t[0].join();
     
-  /*n = write(SocketFD,"exit",4);
-    bzero(buffer,256);
-    n = read(SocketFD,buffer,255);
-    if (n < 0) perror("ERROR reading from socket");
-    //printf("Here is the message: [%s]\n",buffer);
-    n = write(SocketFD,"I got your message",18);
+  /*
     shutdown(SocketFD, SHUT_RDWR);
   */
   close(SocketFD);

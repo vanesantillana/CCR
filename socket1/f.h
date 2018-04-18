@@ -10,8 +10,10 @@
 #include <bits/stdc++.h>
 #include <thread>
 using namespace std;
+typedef map<string,int> StringMap;
 
-int size=1024;
+
+int size=10240;
 int nbytes=4;
 
 int getSize(char*buffer,int i,int f){
@@ -47,10 +49,13 @@ string complete_zero(int size,int nbytes){
 
 
 void my_write2(int SocketFD,string msg){
-  msg=complete_zero(msg.size(),nbytes) + msg; //Agrego mi tamanio a la cabeza del mensaje
+  msg=complete_zero(msg.size(),nbytes) + msg; 
   write(SocketFD,msg.c_str(),msg.size());
 }
 
+void my_writeSimple(int SocketFD,string msg){
+  write(SocketFD,msg.c_str(),msg.size());
+}
 
 
 /////////////PROTOCOLOS/////////////
@@ -63,9 +68,8 @@ int atoi_first_block(char *n_buffer){
 }
 //Action P: print list of user on the chat
 string write_protocol_P(){
-  cout << "Action P" << endl;
+  //cout << "Action P" << endl;
   string action = complete_zero(1, nbytes) +"P";
-  
   return action;
 }
 
@@ -89,7 +93,7 @@ string read_protocol_L(char * n_buffer){
 
 //Action C: send a msg to a user on the chat
 string write_protocol_C(string nickname, string msg){
-  cout << "Action C" << endl;
+  //cout << "Action C" << endl;
   string action = complete_zero(msg.size(),nbytes) +"C" + 
                   complete_zero(nickname.size(),2) +nickname + msg;
   return action;
@@ -140,9 +144,136 @@ void read_protocol_R(char * n_buffer){
 
 // Action E: End chat or logout from chat 
 string write_protocol_E(){
-  cout << "Action E" << endl;
+  //cout << "Action E" << endl;
   string action = complete_zero(1, nbytes) +"E";
   return action;
 }
 
+
+string findInMap(StringMap mapa,int val){
+  StringMap::iterator it = mapa.begin();
+  string resp="";
+  while(it != mapa.end()){
+    if(it->second==val){
+      resp=it->first;
+      break;
+    }
+    it++;
+    
+  }
+  return resp;
+}
+
+string write_protocol_F(string nick,string filename){
+  string msg=complete_zero(filename.size(),nbytes) +"F" + 
+    complete_zero(nick.size(),2) +nick+ filename;
+
+  //Leer archivo
+  //ifstream infile ("hack.jpg",ifstream::binary);
+  cout<<"file name"<<filename<<endl;
+  ifstream infile (filename,ifstream::binary);
+  infile.seekg (0,infile.end);
+  long size = infile.tellg();
+  infile.seekg (0);
+  msg=msg+complete_zero(size,4);
+  char* buffer = new char[size];
+  infile.read (buffer,size);
+  infile.close();
+
+  for(int x=0;x<size;x++){
+    msg=msg+buffer[x];
+  }
+  
+  //cout<<"size enviado: "<<size<<endl;
+  //cout<<"esto estoy enviando:"<<msg<<endl;
+  return msg;
+}
+
+
+
+string read_protocol_F(char * n_buffer,string &nick){
+  char buffer[size];
+  int msg_size=atoi_first_block(n_buffer);
+  string temp;
+  int cadena_size= 5 + 2; //total Bytes
+  for (int i = 5; i < cadena_size; i++)
+    temp =temp + n_buffer[i];
+  int nickname_size = atoi(temp.c_str());
+  temp="";
+  cadena_size=7+nickname_size;
+  for (int i = 7; i < cadena_size; i++)
+        temp += n_buffer[i];
+  string nickname = temp;
+  //cout<<"Nickname: "<<nickname<<endl;
+  nick=nickname;
+  temp="";
+  int size_temp=cadena_size;
+  cadena_size= cadena_size + msg_size;
+  for (int i = size_temp; i < cadena_size; i++)
+    temp += n_buffer[i];
+  string msg = temp;
+
+  string filesize;
+  for (int i = cadena_size; i < cadena_size+4; i++)
+    filesize += n_buffer[i];
+  int fsize=atoi(filesize.c_str());
+  int n_pos=cadena_size+4;
+
+  char* buffer2 = new char[fsize];
+  int cont=0;
+  for(int i=n_pos;i<n_pos+fsize;i++){
+    buffer2[cont]=n_buffer[i];
+    cont++;
+  }
+
+
+  ofstream outfile ("holaaaa.png",ofstream::binary);
+  outfile.write (buffer2,fsize);
+  outfile.close();
+  
+  return msg;
+}
+
+
+string read_protocol_D(char * n_buffer,string &nick,string newNick){
+  char buffer[size];
+  int msg_size=atoi_first_block(n_buffer);
+  string temp;
+  int cadena_size= 5 + 2; //total Bytes
+  for (int i = 5; i < cadena_size; i++)
+    temp =temp + n_buffer[i];
+  int nickname_size = atoi(temp.c_str());
+  temp="";
+  cadena_size=7+nickname_size;
+  for (int i = 7; i < cadena_size; i++)
+        temp += n_buffer[i];
+  string nickname = temp;
+  nick=nickname;
+  temp="";
+  int size_temp=cadena_size;
+  cadena_size= cadena_size + msg_size;
+  for (int i = size_temp; i < cadena_size; i++)
+    temp += n_buffer[i];
+  string msg = temp;
+
+  string msgFinal;
+  for(int x=0;x<5;x++)
+    msgFinal+=n_buffer[x];
+
+  msgFinal=msgFinal+complete_zero(newNick.size(),2)+newNick;
+  
+  string filesize;
+  for (int i = cadena_size; i < cadena_size+4; i++)
+    filesize += n_buffer[i];
+  int fsize=atoi(filesize.c_str());
+  int n_pos=cadena_size+4;
+
+  for(int i=cadena_size;i<n_pos+fsize;i++){
+    msgFinal+=n_buffer[i];  
+  }
+
+  cout<<"mesageFINAL:"<<msgFinal<<endl;
+
+  return msgFinal;
+}
 
