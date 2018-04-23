@@ -171,7 +171,7 @@ int main(void)
  
   stSockAddr.sin_family = AF_INET;
   stSockAddr.sin_port = htons(345);
-  Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
+  Res = inet_pton(AF_INET, "192.168.197.57", &stSockAddr.sin_addr);
  
   if (0 > Res)
     {
