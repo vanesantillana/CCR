@@ -43,11 +43,7 @@ void nuevoUsuario( int ConnectFD){
   cbreak();                       /* Line buffering disabled, Pass on*/
   keypad(stdscr, TRUE);           /* I need that nifty F1         */
   noecho();
-     
   init_win_params(&win);
-  //    print_win_params(&win);
-  //    attron(COLOR_PAIR(1));
-  //    attroff(COLOR_PAIR(1));
   create_box(&win, TRUE);
   my_writeSimple(ConnectFD,mensaje);
 
@@ -63,15 +59,6 @@ void nuevoUsuario( int ConnectFD){
       //nv=write_protocol_R(nick+" dice: "+nv);
       sendAllMap(Users,msgForAll);
     }
-    /*   else if (tipo == 'E'){
-    //shutdown(ConnectFD, SHUT_RDWR);
-    my_writeSimple(ConnectFD,write_protocol_E());
-    string key=findInMap(Users,ConnectFD);
-    Users.erase(key);
-    close(ConnectFD);
-    break;
-    }*/
-   
   }
 }
 

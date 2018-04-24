@@ -284,7 +284,7 @@ typedef struct _WIN_struct {
 }WIN;
 
 
-typedef map<string,WIN> WinMap;
+typedef map<string,WIN*> WinMap;
 void init_win_params(WIN *p_win);
 void print_win_params(WIN *p_win){}
 void create_box(WIN *win, bool flag);

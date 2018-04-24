@@ -16,14 +16,14 @@ void my_read(int SocketFD){
     if(tipo=='L'){
       string nick=read_protocol_L(SocketFD,sizef);
       if(yo!=nick){
-        U[nick];
+        U[nick]=new WIN;
         initscr();                      /* Start curses mode            */
         start_color();                  /* Start the color functionality */
         cbreak();                       /* Line buffering disabled, Pass on*/
         keypad(stdscr, TRUE);           /* I need that nifty F1         */
         noecho();
-        init_win_params(&U[nick]);
-        create_box(&U[nick], TRUE);
+        init_win_params(U[nick]);
+        create_box(U[nick], TRUE);
       }
       
     }
@@ -32,7 +32,8 @@ void my_read(int SocketFD){
       string msg=read_protocol_C(SocketFD,sizef,nick);
       if(yo!=nick){
         int ch=atoi(msg.c_str());
-        movimientoPersonaje(ch,&U[nick]);
+        movimientoPersonaje(ch,U[nick]);
+        cout<<"nasaaasdasdas"<<endl;
       }
     }
 
@@ -41,7 +42,7 @@ void my_read(int SocketFD){
 
 
 void my_write(int SocketFD){
-  U[yo];
+  U[yo]=new WIN;
   //WIN win;
   int ch;
   initscr();                      /* Start curses mode            */
@@ -49,11 +50,11 @@ void my_write(int SocketFD){
   cbreak();                       /* Line buffering disabled, Pass on*/
   keypad(stdscr, TRUE);           /* I need that nifty F1         */
   noecho();     
-  init_win_params(&U[yo]);
+  init_win_params(U[yo]);
   //    print_win_params(&win);
   //    attron(COLOR_PAIR(1));
   //    attroff(COLOR_PAIR(1));
-  create_box(&U[yo], TRUE);
+  create_box(U[yo], TRUE);
    
   while(1){
     int ch;
@@ -62,7 +63,7 @@ void my_write(int SocketFD){
       my_writeSimple(SocketFD,wp_P);
       //cout<<win.startx<<endl;
       //cout<<win.starty<<endl;
-      movimientoPersonaje(ch,&U[yo]);
+      movimientoPersonaje(ch,U[yo]);
     }
     
     //}
