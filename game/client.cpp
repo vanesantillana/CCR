@@ -1,16 +1,10 @@
-#include <ncurses.h>        //g++ -o g.exe g.cpp  -lncurses  -std=c++1
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <bits/stdc++.h>
-#include <thread>
+//g++ client.cpp -o cli -std=c++11 -pthread -lncurses
+
 #include "f.h"
 using  namespace std; 
+
+WinMap U;
+string yo;
 
 void my_read(int SocketFD){  
   while(1){
@@ -19,66 +13,62 @@ void my_read(int SocketFD){
     if(tipo=='R'){
       read_protocol_R(SocketFD,sizef);
     }
+    if(tipo=='L'){
+      string nick=read_protocol_L(SocketFD,sizef);
+      if(yo!=nick){
+        U[nick];
+        initscr();                      /* Start curses mode            */
+        start_color();                  /* Start the color functionality */
+        cbreak();                       /* Line buffering disabled, Pass on*/
+        keypad(stdscr, TRUE);           /* I need that nifty F1         */
+        noecho();
+        init_win_params(&U[nick]);
+        create_box(&U[nick], TRUE);
+      }
+      
+    }
+    if(tipo=='C'){
+      string nick;
+      string msg=read_protocol_C(SocketFD,sizef,nick);
+      if(yo!=nick){
+        int ch=atoi(msg.c_str());
+        movimientoPersonaje(ch,&U[nick]);
+      }
+    }
+
   }
 }
 
 
 void my_write(int SocketFD){
-  WIN win;
-  //    WIN win2;
-
-
+  U[yo];
+  //WIN win;
   int ch;
-
   initscr();                      /* Start curses mode            */
   start_color();                  /* Start the color functionality */
   cbreak();                       /* Line buffering disabled, Pass on*/
   keypad(stdscr, TRUE);           /* I need that nifty F1         */
-  noecho();
-     
-  init_win_params(&win);
+  noecho();     
+  init_win_params(&U[yo]);
   //    print_win_params(&win);
   //    attron(COLOR_PAIR(1));
   //    attroff(COLOR_PAIR(1));
-  create_box(&win, TRUE);
+  create_box(&U[yo], TRUE);
    
   while(1){
     int ch;
     while((ch = getch()) != KEY_F(1)){
-      //cout<<"tecla"<<endl;
       string wp_P=write_protocol_R(to_string(ch));
       my_writeSimple(SocketFD,wp_P);
-      switch(ch){
-      case KEY_LEFT:
-	create_box(&win, FALSE);
-	--win.startx;
-	create_box(&win, TRUE);
-	break;
-      case KEY_RIGHT:
-	create_box(&win, FALSE);
-	++win.startx;
-	create_box(&win, TRUE);
-	break;
-      case KEY_UP:
-	create_box(&win, FALSE);
-	--win.starty;
-	create_box(&win, TRUE);
-	break;
-      case KEY_DOWN:
-	create_box(&win, FALSE);
-	++win.starty;
-	create_box(&win, TRUE);
-	break;
-      }
       //cout<<win.startx<<endl;
       //cout<<win.starty<<endl;
+      movimientoPersonaje(ch,&U[yo]);
     }
     
     //}
     
   }
 }
-
 
 
 
@@ -128,6 +118,7 @@ int main(void)
   cout<<"usuario: ";
   string nombreUsuario;
   cin>>nombreUsuario;
+  yo=nombreUsuario;
   string wp_P=write_protocol_L(nombreUsuario);
   my_writeSimple(SocketFD,wp_P);
 

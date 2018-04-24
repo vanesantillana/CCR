@@ -1,19 +1,5 @@
-#include <ncurses.h>        //g++ -o g.exe g.cpp  -lncurses  -std=c++11  q -lpthread
-#include <iostream>       // std::cout
-#include <thread>         // std::thread, std::this_thread::sleep_for
-#include <chrono>         // std::chrono::seconds
+//g++ server2.cpp -o serve -std=c++11 -pthread -lncurses
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <iostream>
-#include <bits/stdc++.h>
-#include <thread>
 #include "f.h"
 
 using  namespace std; 
@@ -44,13 +30,12 @@ void nuevoUsuario( int ConnectFD){
   
   WIN win;
   //    WIN win2;
- 
-
   int sizef; 
   char tipo=getTypeProtocol(ConnectFD,sizef);
   string nick=read_protocol_L(ConnectFD,sizef);
   Users[nick]=ConnectFD;
-
+  string nick2=write_protocol_L(nick);
+  sendAllMap(Users,nick2);
   int ch;
 
   initscr();                      /* Start curses mode            */
@@ -65,39 +50,18 @@ void nuevoUsuario( int ConnectFD){
   //    attroff(COLOR_PAIR(1));
   create_box(&win, TRUE);
   my_writeSimple(ConnectFD,mensaje);
+
   while(true){ 
     //my_writeSimple(ConnectFD,menu);
     tipo=getTypeProtocol(ConnectFD,sizef);
     if (tipo == 'R'){
       string msj;
       string nv= read_protocol_RGame(ConnectFD,sizef);
-      //nv=write_protocol_R(nick+" dice: "+nv);
-      //sendAllMap(Users,nv);
-      //para ver al inicio
       int ch=atoi(nv.c_str());
-      switch(ch)
-	{case KEY_LEFT:
-	    create_box(&win, FALSE);
-	    --win.startx;
-	    create_box(&win, TRUE);
-	    break;
-	case KEY_RIGHT:
-	  create_box(&win, FALSE);
-	  ++win.startx;
-	  create_box(&win, TRUE);
-	  break;
-	case KEY_UP:
-	  create_box(&win, FALSE);
-	  --win.starty;
-	  create_box(&win, TRUE);
-	  break;
-	case KEY_DOWN:
-	  create_box(&win, FALSE);
-	  ++win.starty;
-	  create_box(&win, TRUE);
-	  break;
-	}
-      
+      movimientoPersonaje(ch,&win);
+      string msgForAll=write_protocol_C(nick,nv);
+      //nv=write_protocol_R(nick+" dice: "+nv);
+      sendAllMap(Users,msgForAll);
     }
     /*   else if (tipo == 'E'){
     //shutdown(ConnectFD, SHUT_RDWR);

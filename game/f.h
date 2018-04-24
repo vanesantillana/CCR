@@ -10,8 +10,10 @@
 #include <bits/stdc++.h>
 #include <thread>
 #include <ncurses.h>  
+
 using namespace std;
 typedef map<string,int> StringMap;
+
 int size=10240;
 int nbytes=4;
 
@@ -280,6 +282,9 @@ typedef struct _WIN_struct {
   int height, width;
   WIN_BORDER border;
 }WIN;
+
+
+typedef map<string,WIN> WinMap;
 void init_win_params(WIN *p_win);
 void print_win_params(WIN *p_win){}
 void create_box(WIN *win, bool flag);
@@ -326,4 +331,50 @@ void create_box(WIN *p_win, bool flag){
       for(i = x; i <= x + w; ++i)
 	mvaddch(j, i, ' ');
   refresh();
+}
+
+void movimientoPersonaje(int ch,WIN *win){
+  switch(ch){
+
+    case KEY_LEFT:
+	      create_box(win, FALSE);
+	      --win->startx;
+	      create_box(win, TRUE);
+	      break;
+      case KEY_RIGHT:
+        create_box(win, FALSE);
+        ++win->startx;
+        create_box(win, TRUE);
+        break;
+      case KEY_UP:
+        create_box(win, FALSE);
+        --win->starty;
+        create_box(win, TRUE);
+        break;
+      case KEY_DOWN:
+        create_box(win, FALSE);
+        ++win->starty;
+        create_box(win, TRUE);
+        break;
+    /*  case KEY_LEFT:
+	      create_box(&win, FALSE);
+	      --win.startx;
+	      create_box(&win, TRUE);
+	      break;
+      case KEY_RIGHT:
+        create_box(&win, FALSE);
+        ++win.startx;
+        create_box(&win, TRUE);
+        break;
+      case KEY_UP:
+        create_box(&win, FALSE);
+        --win.starty;
+        create_box(&win, TRUE);
+        break;
+      case KEY_DOWN:
+        create_box(&win, FALSE);
+        ++win.starty;
+        create_box(&win, TRUE);
+        break;*/
+  }
 }
