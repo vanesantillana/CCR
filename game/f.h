@@ -258,8 +258,40 @@ string read_protocol_RGame(int SocketFD,int sizef){
   int n = read(SocketFD, buffer, sizef);
   if (n < 0) perror("error reading message");
   return charToString(buffer,sizef);
-  
 }
+
+///////////////Nuevo Protocolo q envia X and Y
+string write_protocol_X(string nick,int x,int y){
+  string action = complete_zero(to_string(x).size(),4) +"X" + 
+                  complete_zero(nick.size(),2) +nick +to_string(x)+ 
+                  complete_zero(to_string(y).size(),4)+to_string(y);
+  return action;
+}
+
+void read_protocol_X(int SocketFD,int sizef,string &nick,int &x,int &y){
+  //NICK
+  char buffer2[3];
+  int n = read(SocketFD, buffer2,2);
+  int sizeNick=atoi(buffer2);
+  char bufferNick[sizeNick+1];
+  n=read(SocketFD,bufferNick,sizeNick);
+  nick=bufferNick;
+
+  //X
+  char bufferX[sizef+1];
+  n=read(SocketFD,bufferX,sizef);
+  x=atoi(bufferX);
+
+  //Y
+  char nSizeF[5];
+  n=read(SocketFD,nSizeF,4);
+  int sizeY=atoi(nSizeF);
+  char bufferY[sizef+1];
+  n=read(SocketFD,bufferY,sizeY);
+  y=atoi(bufferY);
+}
+
+
 
 
 void sendAllMap(StringMap mapa,string msj){
@@ -289,10 +321,6 @@ void init_win_params(WIN *p_win);
 void print_win_params(WIN *p_win){}
 void create_box(WIN *win, bool flag);
 //void bullet(WIN *p_win){}
-
-
-
-
 
 void init_win_params(WIN *p_win){
   p_win->height = 8;
@@ -356,25 +384,12 @@ void movimientoPersonaje(int ch,WIN *win){
         ++win->starty;
         create_box(win, TRUE);
         break;
-    /*  case KEY_LEFT:
-	      create_box(&win, FALSE);
-	      --win.startx;
-	      create_box(&win, TRUE);
-	      break;
-      case KEY_RIGHT:
-        create_box(&win, FALSE);
-        ++win.startx;
-        create_box(&win, TRUE);
-        break;
-      case KEY_UP:
-        create_box(&win, FALSE);
-        --win.starty;
-        create_box(&win, TRUE);
-        break;
-      case KEY_DOWN:
-        create_box(&win, FALSE);
-        ++win.starty;
-        create_box(&win, TRUE);
-        break;*/
   }
+}
+
+void movimientoPersonaje2(int x,int y,WIN *win){
+    create_box(win, FALSE);
+    win->startx=x;
+    win->starty=y;
+    create_box(win, TRUE);
 }

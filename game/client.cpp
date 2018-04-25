@@ -27,13 +27,48 @@ void my_read(int SocketFD){
       }
       
     }
+    
     if(tipo=='C'){
       string nick;
       string msg=read_protocol_C(SocketFD,sizef,nick);
       if(yo!=nick){
+        if(U[nick]==nullptr){
+          U[nick]=new WIN;
+          initscr();                      /* Start curses mode            */
+          start_color();                  /* Start the color functionality */
+          cbreak();                       /* Line buffering disabled, Pass on*/
+          keypad(stdscr, TRUE);           /* I need that nifty F1         */
+          noecho();
+          init_win_params(U[nick]);
+          create_box(U[nick], TRUE);
+        }
         int ch=atoi(msg.c_str());
         movimientoPersonaje(ch,U[nick]);
-        cout<<"nasaaasdasdas"<<endl;
+        //cout<<"ch: "<<ch<<endl;
+      }
+    }
+    if(tipo=='X'){
+      string nick;
+      int x,y;
+      read_protocol_X(SocketFD,sizef,nick,x,y);
+      if(yo!=nick){
+        if(U[nick]==nullptr){
+          U[nick]=new WIN;
+          initscr();                      /* Start curses mode            */
+          start_color();                  /* Start the color functionality */
+          cbreak();                       /* Line buffering disabled, Pass on*/
+          keypad(stdscr, TRUE);           /* I need that nifty F1         */
+          noecho();
+          init_win_params(U[nick]);
+          U[nick]->startx=x;
+          U[nick]->starty=y;
+          create_box(U[nick], TRUE);
+        }
+        else{
+          movimientoPersonaje2(x,y,U[nick]);  
+        }
+        
+        //cout<<"ch: "<<ch<<endl;
       }
     }
 
@@ -59,7 +94,9 @@ void my_write(int SocketFD){
   while(1){
     int ch;
     while((ch = getch()) != KEY_F(1)){
-      string wp_P=write_protocol_R(to_string(ch));
+      //string wp_P=write_protocol_R(to_string(ch));
+      
+      string wp_P=write_protocol_X(yo,U[yo]->startx,U[yo]->starty);
       my_writeSimple(SocketFD,wp_P);
       //cout<<win.startx<<endl;
       //cout<<win.starty<<endl;
@@ -91,9 +128,9 @@ int main(void)
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
  
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(345);
-  //Res = inet_pton(AF_INET, "192.168.197.57", &stSockAddr.sin_addr);
-  Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
+  stSockAddr.sin_port = htons(346);
+  Res = inet_pton(AF_INET, "192.168.197.95", &stSockAddr.sin_addr);
+  //Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
  
   if (0 > Res)
     {
@@ -114,8 +151,6 @@ int main(void)
       close(SocketFD);
       exit(EXIT_FAILURE);
     }
-
-  
   cout<<"usuario: ";
   string nombreUsuario;
   cin>>nombreUsuario;
@@ -123,10 +158,6 @@ int main(void)
   string wp_P=write_protocol_L(nombreUsuario);
   my_writeSimple(SocketFD,wp_P);
 
-  
-
-
-  
   thread t[2];
   t[0]=thread(my_read,SocketFD);
   t[1]=thread(my_write,SocketFD);

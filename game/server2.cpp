@@ -59,10 +59,17 @@ void nuevoUsuario( int ConnectFD){
       //nv=write_protocol_R(nick+" dice: "+nv);
       sendAllMap(Users,msgForAll);
     }
+    if(tipo == 'X'){
+      int x, y;
+      string nickNuevo;
+      read_protocol_X(ConnectFD,sizef,nickNuevo,x,y);
+      movimientoPersonaje2(x,y,&win);
+      string nuevoMensaje=write_protocol_X(nick,x,y);
+      sendAllMap(Users,nuevoMensaje);
+    }
   }
 }
 
-//g++ client.cpp -o cli -std=c++11 -pthread
 
 int main(void){
   
@@ -80,7 +87,7 @@ int main(void){
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
   
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(345);
+  stSockAddr.sin_port = htons(346);
   stSockAddr.sin_addr.s_addr = INADDR_ANY;
   
   if(-1 == bind(SocketFD,(const struct sockaddr *)&stSockAddr, sizeof(struct sockaddr_in)))
