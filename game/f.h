@@ -377,8 +377,8 @@ void movimientoPersonaje2(int x,int y,WIN *win){
 void init_win_params_bullet(WIN *p_win){
   p_win->height = 2;
   p_win->width = 2;
-  p_win->starty = (LINES - p_win->height)/2;
-  p_win->startx = (COLS - p_win->width)/2;
+  p_win->starty = p_win->height;
+  p_win->startx = p_win->width;
   p_win->border.ls = '|';
   p_win->border.rs = '|';
   p_win->border.ts = '-';
@@ -390,11 +390,11 @@ void init_win_params_bullet(WIN *p_win){
 }
 
 
-void create_bullet(WIN *p_win, bool flag){
+void create_bullet(WIN *p_win,WIN *win, bool flag){
   int i, j;
   int x, y, w, h;
-  x = p_win->startx;
-  y = p_win->starty;
+  x = win->startx+7;
+  y = win->starty-2;
   w = p_win->width;
   h = p_win->height;
   if(flag == TRUE)
@@ -432,7 +432,7 @@ void movimientoPersonaje(int ch,WIN *win){
         ++win->starty;
         create_box(win, TRUE);
         break;
-      case KEY_ENTER:
+      case ' ':
         WIN win2;
         int ch;
         initscr();                      
@@ -441,12 +441,14 @@ void movimientoPersonaje(int ch,WIN *win){
         keypad(stdscr, TRUE);           
         noecho();     
         init_win_params_bullet(&win2);
-        create_bullet(&win2, TRUE);
-        for(int t=0;t<100000;t++){
+
+        create_bullet(&win2,win, TRUE);
+        /*
+        for(int t=0;t<5;t++){
           create_bullet(&win2,FALSE);
           ++win2.startx;
           create_bullet(&win2,TRUE);
-        }
+        }*/
 
         break;
 

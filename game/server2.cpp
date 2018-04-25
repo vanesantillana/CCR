@@ -87,7 +87,7 @@ int main(void){
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
   
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(346);
+  stSockAddr.sin_port = htons(349);
   stSockAddr.sin_addr.s_addr = INADDR_ANY;
   
   if(-1 == bind(SocketFD,(const struct sockaddr *)&stSockAddr, sizeof(struct sockaddr_in)))
