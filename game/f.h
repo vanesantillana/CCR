@@ -336,6 +336,8 @@ void init_win_params(WIN *p_win){
   p_win->border.bl = '+';
   p_win->border.br = '+';
 }
+
+
 void create_box(WIN *p_win, bool flag){
   int i, j;
   int x, y, w, h;
@@ -353,6 +355,52 @@ void create_box(WIN *p_win, bool flag){
       move( y+5,x ); addstr("# ############ #");
       move( y+6,x ); addstr("# #          # #");
       move( y+7,x ); addstr("   ##      ##   ");
+    }
+  else
+    for(j = y; j <= y + h; ++j)
+      for(i = x; i <= x + w; ++i)
+	mvaddch(j, i, ' ');
+  refresh();
+}
+
+
+void movimientoPersonaje2(int x,int y,WIN *win){
+    create_box(win, FALSE);
+    win->startx=x;
+    win->starty=y;
+    create_box(win, TRUE);
+}
+
+
+//BUllet o Bala
+
+void init_win_params_bullet(WIN *p_win){
+  p_win->height = 2;
+  p_win->width = 2;
+  p_win->starty = (LINES - p_win->height)/2;
+  p_win->startx = (COLS - p_win->width)/2;
+  p_win->border.ls = '|';
+  p_win->border.rs = '|';
+  p_win->border.ts = '-';
+  p_win->border.bs = '-';
+  p_win->border.tl = '+';
+  p_win->border.tr = '+';
+  p_win->border.bl = '+';
+  p_win->border.br = '+';
+}
+
+
+void create_bullet(WIN *p_win, bool flag){
+  int i, j;
+  int x, y, w, h;
+  x = p_win->startx;
+  y = p_win->starty;
+  w = p_win->width;
+  h = p_win->height;
+  if(flag == TRUE)
+    {
+      move( y+0,x ); addstr("oo");
+      move( y+1,x ); addstr("oo");
     }
   else
     for(j = y; j <= y + h; ++j)
@@ -384,12 +432,24 @@ void movimientoPersonaje(int ch,WIN *win){
         ++win->starty;
         create_box(win, TRUE);
         break;
+      case KEY_ENTER:
+        WIN win2;
+        int ch;
+        initscr();                      
+        start_color();                  
+        cbreak();                       
+        keypad(stdscr, TRUE);           
+        noecho();     
+        init_win_params_bullet(&win2);
+        create_bullet(&win2, TRUE);
+        for(int t=0;t<100000;t++){
+          create_bullet(&win2,FALSE);
+          ++win2.startx;
+          create_bullet(&win2,TRUE);
+        }
+
+        break;
+
   }
 }
 
-void movimientoPersonaje2(int x,int y,WIN *win){
-    create_box(win, FALSE);
-    win->startx=x;
-    win->starty=y;
-    create_box(win, TRUE);
-}
