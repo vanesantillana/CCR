@@ -128,7 +128,7 @@ int main(void)
   memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
  
   stSockAddr.sin_family = AF_INET;
-  stSockAddr.sin_port = htons(349);
+  stSockAddr.sin_port = htons(puerto);
   //Res = inet_pton(AF_INET, "192.168.197.95", &stSockAddr.sin_addr);
   Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
  

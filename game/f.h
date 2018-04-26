@@ -10,13 +10,14 @@
 #include <bits/stdc++.h>
 #include <thread>
 #include <ncurses.h>  
-
+#include <chrono>
 using namespace std;
 typedef map<string,int> StringMap;
-
+int puerto=214;
 int size=10240;
 int nbytes=4;
-
+thread bullets[1000000];
+int contB=0;
 string charToString(char*buffer,int sizef){
   string resp;
   for (int i = 0; i < sizef; i++){
@@ -389,24 +390,30 @@ void init_win_params_bullet(WIN *p_win){
   p_win->border.br = '+';
 }
 
-
-void create_bullet(WIN *p_win,WIN *win, bool flag){
-  int i, j;
-  int x, y, w, h;
-  x = win->startx+7;
-  y = win->starty-2;
-  w = p_win->width;
-  h = p_win->height;
-  if(flag == TRUE)
-    {
-      move( y+0,x ); addstr("oo");
-      move( y+1,x ); addstr("oo");
+unsigned int microseconds=1;
+void create_bullet(WIN *p_win,WIN *win){
+    int i, j;
+    int x, y, w, h;
+    x = win->startx+7;
+    y = win->starty-2;
+    w = p_win->width;
+    h = p_win->height;
+    for(int it=0;it<10;it++){
+         move( y+0,x ); addstr("oo");
+        move( y+1,x ); addstr("oo");
+        mvaddch(j, i, ' ');
+      refresh();  
+      //for(int xt=0;xt<10000000;xt++);
+      sleep(microseconds);
+      for(j = y; j <= y + 2; ++j)
+        for(i = x; i <= x + 2; ++i)
+      mvaddch(j, i, ' ');
+      refresh();
+      y=y-2; 
     }
-  else
-    for(j = y; j <= y + h; ++j)
-      for(i = x; i <= x + w; ++i)
-	mvaddch(j, i, ' ');
-  refresh();
+    
+    
+  
 }
 
 void movimientoPersonaje(int ch,WIN *win){
@@ -442,13 +449,8 @@ void movimientoPersonaje(int ch,WIN *win){
         noecho();     
         init_win_params_bullet(&win2);
 
-        create_bullet(&win2,win, TRUE);
-        /*
-        for(int t=0;t<5;t++){
-          create_bullet(&win2,FALSE);
-          ++win2.startx;
-          create_bullet(&win2,TRUE);
-        }*/
+        bullets[contB]=thread(create_bullet,&win2,win);
+        contB++;
 
         break;
 
