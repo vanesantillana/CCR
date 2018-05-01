@@ -10,11 +10,14 @@
 #include <bits/stdc++.h>
 #include <thread>
 #include <ncurses.h>  
+#include <chrono>
 using namespace std;
 typedef map<string,int> StringMap;
+int puerto=215;
 int size=10240;
 int nbytes=4;
-
+thread bullets[1000000];
+int contB=0;
 string charToString(char*buffer,int sizef){
   string resp;
   for (int i = 0; i < sizef; i++){
@@ -256,8 +259,40 @@ string read_protocol_RGame(int SocketFD,int sizef){
   int n = read(SocketFD, buffer, sizef);
   if (n < 0) perror("error reading message");
   return charToString(buffer,sizef);
-  
 }
+
+///////////////Nuevo Protocolo q envia X and Y
+string write_protocol_X(string nick,int x,int y){
+  string action = complete_zero(to_string(x).size(),4) +"X" + 
+                  complete_zero(nick.size(),2) +nick +to_string(x)+ 
+                  complete_zero(to_string(y).size(),4)+to_string(y);
+  return action;
+}
+
+void read_protocol_X(int SocketFD,int sizef,string &nick,int &x,int &y){
+  //NICK
+  char buffer2[3];
+  int n = read(SocketFD, buffer2,2);
+  int sizeNick=atoi(buffer2);
+  char bufferNick[sizeNick+1];
+  n=read(SocketFD,bufferNick,sizeNick);
+  nick=bufferNick;
+
+  //X
+  char bufferX[sizef+1];
+  n=read(SocketFD,bufferX,sizef);
+  x=atoi(bufferX);
+
+  //Y
+  char nSizeF[5];
+  n=read(SocketFD,nSizeF,4);
+  int sizeY=atoi(nSizeF);
+  char bufferY[sizef+1];
+  n=read(SocketFD,bufferY,sizeY);
+  y=atoi(bufferY);
+}
+
+
 
 
 void sendAllMap(StringMap mapa,string msj){
@@ -280,14 +315,13 @@ typedef struct _WIN_struct {
   int height, width;
   WIN_BORDER border;
 }WIN;
+
+
+typedef map<string,WIN*> WinMap;
 void init_win_params(WIN *p_win);
 void print_win_params(WIN *p_win){}
 void create_box(WIN *win, bool flag);
 //void bullet(WIN *p_win){}
-
-
-
-
 
 void init_win_params(WIN *p_win){
   p_win->height = 8;
@@ -303,6 +337,8 @@ void init_win_params(WIN *p_win){
   p_win->border.bl = '+';
   p_win->border.br = '+';
 }
+
+
 void create_box(WIN *p_win, bool flag){
   int i, j;
   int x, y, w, h;
@@ -327,3 +363,131 @@ void create_box(WIN *p_win, bool flag){
 	mvaddch(j, i, ' ');
   refresh();
 }
+
+/*
+void create_legend(WIN *p_win, int vida){
+  int i, j;
+  int x, y, w, h;
+  x = p_win->startx;
+  y = p_win->starty;
+  w = p_win->width;
+  h = p_win->height;
+      move( 0,0); addstr("");
+    
+	mvaddch(j, i, ' ');
+  refresh();
+}
+
+*/
+
+void movimientoPersonaje2(int x,int y,WIN *win){
+    create_box(win, FALSE);
+    win->startx=x;
+    win->starty=y;
+    create_box(win, TRUE);
+}
+
+
+//BUllet o Bala
+
+void init_win_params_bullet(WIN *p_win){
+  p_win->height = 2;
+  p_win->width = 2;
+  p_win->starty = p_win->height;
+  p_win->startx = p_win->width;
+  p_win->border.ls = '|';
+  p_win->border.rs = '|';
+  p_win->border.ts = '-';
+  p_win->border.bs = '-';
+  p_win->border.tl = '+';
+  p_win->border.tr = '+';
+  p_win->border.bl = '+';
+  p_win->border.br = '+';
+}
+
+unsigned int microseconds=1;
+void create_bullet(WIN *p_win,WIN *win){
+    int i, j;
+    int x, y, w, h;
+    x = win->startx+7;
+    y = win->starty-2;
+    w = p_win->width;
+    h = p_win->height;
+    for(int it=0;it<10;it++){
+         move( y+0,x ); addstr("oo");
+        move( y+1,x ); addstr("oo");
+        mvaddch(j, i, ' ');
+      refresh();  
+      //for(int xt=0;xt<10000000;xt++);
+      sleep(microseconds);
+      for(j = y; j <= y + 2; ++j)
+        for(i = x; i <= x + 2; ++i)
+      mvaddch(j, i, ' ');
+      refresh();
+      y=y-2; 
+    }
+    
+    
+  
+}
+
+
+
+void movimientoPersonaje(int ch,WIN *win){
+  switch(ch){
+    case KEY_LEFT:
+	      create_box(win, FALSE);
+	      --win->startx;
+	      create_box(win, TRUE);
+	      break;
+      case KEY_RIGHT:
+        create_box(win, FALSE);
+        ++win->startx;
+        create_box(win, TRUE);
+        break;
+      case KEY_UP:
+        create_box(win, FALSE);
+        --win->starty;
+        create_box(win, TRUE);
+        break;
+      case KEY_DOWN:
+        create_box(win, FALSE);
+        ++win->starty;
+        create_box(win, TRUE);
+        break;
+      case 1111:
+        WIN win2;
+        int ch;
+        initscr();                      
+        start_color();                  
+        cbreak();                       
+        keypad(stdscr, TRUE);           
+        noecho();     
+        init_win_params_bullet(&win2);
+
+        bullets[contB]=thread(create_bullet,&win2,win);
+        contB++;
+
+        break;
+
+  }
+}
+
+void movimientoPersonaje2(int ch,int &x,int &y){
+  switch(ch){
+    case KEY_LEFT:
+	      --x;
+	      break;
+      case KEY_RIGHT:
+        ++x;
+        break;
+      case KEY_UP:
+        --y;
+        break;
+      case KEY_DOWN:
+        ++y;
+        break;
+  }
+}
+
+
