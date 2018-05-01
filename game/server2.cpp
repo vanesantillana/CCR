@@ -64,7 +64,7 @@ void nuevoUsuario( int ConnectFD){
       string nickNuevo;
       read_protocol_X(ConnectFD,sizef,nickNuevo,x,y);
       movimientoPersonaje2(x,y,&win);
-      string nuevoMensaje=write_protocol_X(nick,x,y);
+      string nuevoMensaje=write_protocol_X(nick,x,y);                                                 
       sendAllMap(Users,nuevoMensaje);
     }
   }

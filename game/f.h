@@ -13,7 +13,7 @@
 #include <chrono>
 using namespace std;
 typedef map<string,int> StringMap;
-int puerto=214;
+int puerto=215;
 int size=10240;
 int nbytes=4;
 thread bullets[1000000];
@@ -364,6 +364,21 @@ void create_box(WIN *p_win, bool flag){
   refresh();
 }
 
+/*
+void create_legend(WIN *p_win, int vida){
+  int i, j;
+  int x, y, w, h;
+  x = p_win->startx;
+  y = p_win->starty;
+  w = p_win->width;
+  h = p_win->height;
+      move( 0,0); addstr("");
+    
+	mvaddch(j, i, ' ');
+  refresh();
+}
+
+*/
 
 void movimientoPersonaje2(int x,int y,WIN *win){
     create_box(win, FALSE);
@@ -416,9 +431,10 @@ void create_bullet(WIN *p_win,WIN *win){
   
 }
 
+
+
 void movimientoPersonaje(int ch,WIN *win){
   switch(ch){
-
     case KEY_LEFT:
 	      create_box(win, FALSE);
 	      --win->startx;
@@ -439,7 +455,7 @@ void movimientoPersonaje(int ch,WIN *win){
         ++win->starty;
         create_box(win, TRUE);
         break;
-      case ' ':
+      case 1111:
         WIN win2;
         int ch;
         initscr();                      
@@ -456,4 +472,22 @@ void movimientoPersonaje(int ch,WIN *win){
 
   }
 }
+
+void movimientoPersonaje2(int ch,int &x,int &y){
+  switch(ch){
+    case KEY_LEFT:
+	      --x;
+	      break;
+      case KEY_RIGHT:
+        ++x;
+        break;
+      case KEY_UP:
+        --y;
+        break;
+      case KEY_DOWN:
+        ++y;
+        break;
+  }
+}
+
 

@@ -31,45 +31,43 @@ void my_read(int SocketFD){
     if(tipo=='C'){
       string nick;
       string msg=read_protocol_C(SocketFD,sizef,nick);
-      if(yo!=nick){
-        if(U[nick]==nullptr){
-          U[nick]=new WIN;
-          initscr();                      /* Start curses mode            */
-          start_color();                  /* Start the color functionality */
-          cbreak();                       /* Line buffering disabled, Pass on*/
-          keypad(stdscr, TRUE);           /* I need that nifty F1         */
-          noecho();
-          init_win_params(U[nick]);
-          create_box(U[nick], TRUE);
-        }
-        int ch=atoi(msg.c_str());
-        movimientoPersonaje(ch,U[nick]);
-        //cout<<"ch: "<<ch<<endl;
+      if(U[nick]==nullptr){
+        U[nick]=new WIN;
+        initscr();                      /* Start curses mode            */
+        start_color();                  /* Start the color functionality */
+        cbreak();                       /* Line buffering disabled, Pass on*/
+        keypad(stdscr, TRUE);           /* I need that nifty F1         */
+        noecho();
+        init_win_params(U[nick]);
+        create_box(U[nick], TRUE);
       }
+      int ch=atoi(msg.c_str());
+      movimientoPersonaje(ch,U[nick]);
+      //cout<<"ch: "<<ch<<endl;
+      
     }
     if(tipo=='X'){
       string nick;
       int x,y;
       read_protocol_X(SocketFD,sizef,nick,x,y);
-      if(yo!=nick){
-        if(U[nick]==nullptr){
-          U[nick]=new WIN;
-          initscr();                      /* Start curses mode            */
-          start_color();                  /* Start the color functionality */
-          cbreak();                       /* Line buffering disabled, Pass on*/
-          keypad(stdscr, TRUE);           /* I need that nifty F1         */
-          noecho();
-          init_win_params(U[nick]);
-          U[nick]->startx=x;
-          U[nick]->starty=y;
-          create_box(U[nick], TRUE);
-        }
-        else{
-          movimientoPersonaje2(x,y,U[nick]);  
-        }
-        
-        //cout<<"ch: "<<ch<<endl;
+      if(U[nick]==nullptr){
+        U[nick]=new WIN;
+        initscr();                      /* Start curses mode            */
+        start_color();                  /* Start the color functionality */
+        cbreak();                       /* Line buffering disabled, Pass on*/
+        keypad(stdscr, TRUE);           /* I need that nifty F1         */
+        noecho();
+        init_win_params(U[nick]);
+        U[nick]->startx=x;
+        U[nick]->starty=y;
+        create_box(U[nick], TRUE);
       }
+      else{
+        movimientoPersonaje2(x,y,U[nick]);  
+      }
+      
+        //cout<<"ch: "<<ch<<endl;
+      
     }
 
   }
@@ -95,12 +93,23 @@ void my_write(int SocketFD){
     int ch;
     while((ch = getch()) != KEY_F(1)){
       //string wp_P=write_protocol_R(to_string(ch));
-      
-      string wp_P=write_protocol_X(yo,U[yo]->startx,U[yo]->starty);
+      if(ch==' '){
+        ch=1111;
+        string wp_P=write_protocol_R(to_string(ch));
+        my_writeSimple(SocketFD,wp_P);
+
+      }
+      else{
+        int x=U[yo]->startx;
+      int y=U[yo]->starty;
+      movimientoPersonaje2(ch,x,y);
+      string wp_P=write_protocol_X(yo,x,y);
       my_writeSimple(SocketFD,wp_P);
       //cout<<win.startx<<endl;
       //cout<<win.starty<<endl;
-      movimientoPersonaje(ch,U[yo]);
+      
+      }
+      
     }
     
     //}
