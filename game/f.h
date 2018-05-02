@@ -18,6 +18,8 @@ int size=10240;
 int nbytes=4;
 thread bullets[1000000];
 int contB=0;
+int vida=5;
+
 string charToString(char*buffer,int sizef){
   string resp;
   for (int i = 0; i < sizef; i++){
@@ -364,21 +366,20 @@ void create_box(WIN *p_win, bool flag){
   refresh();
 }
 
-/*
-void create_legend(WIN *p_win, int vida){
+
+void create_legend(WIN *p_win){
   int i, j;
   int x, y, w, h;
   x = p_win->startx;
   y = p_win->starty;
   w = p_win->width;
   h = p_win->height;
-      move( 0,0); addstr("");
-    
+  for(i = 0; i <= vida; ++i)
+      move(0,i); addstr("|");
+
 	mvaddch(j, i, ' ');
   refresh();
 }
-
-*/
 
 void movimientoPersonaje2(int x,int y,WIN *win){
     create_box(win, FALSE);
@@ -418,8 +419,9 @@ void create_bullet(WIN *p_win,WIN *win){
         move( y+1,x ); addstr("oo");
         mvaddch(j, i, ' ');
       refresh();  
-      //for(int xt=0;xt<10000000;xt++);
-      sleep(microseconds);
+      for(int xt=0;xt<10000000;xt++);
+
+      //sleep(microseconds);
       for(j = y; j <= y + 2; ++j)
         for(i = x; i <= x + 2; ++i)
       mvaddch(j, i, ' ');
@@ -473,7 +475,7 @@ void movimientoPersonaje(int ch,WIN *win){
   }
 }
 
-void movimientoPersonaje2(int ch,int &x,int &y){
+void movimientoPersonaje3(int ch,int &x,int &y){
   switch(ch){
     case KEY_LEFT:
 	      --x;
