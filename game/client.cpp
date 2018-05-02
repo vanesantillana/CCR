@@ -9,7 +9,7 @@ void my_read(int SocketFD){
     if(tipo=='R'){
       read_protocol_R(SocketFD,sizef);
     }
-    if(tipo=='L'){
+    else if(tipo=='L'){
       string nick=read_protocol_L(SocketFD,sizef);
       if(yo!=nick){
         U[nick]=new WIN;
@@ -24,7 +24,7 @@ void my_read(int SocketFD){
       
     }
     
-    if(tipo=='C'){
+    else if(tipo=='C'){
       string nick;
       string msg=read_protocol_C(SocketFD,sizef,nick);
       if(U[nick]==nullptr){
@@ -42,7 +42,7 @@ void my_read(int SocketFD){
       //cout<<"ch: "<<ch<<endl;
       
     }
-    if(tipo=='X'){
+    else if(tipo=='X'){
       string nick;
       int x,y;
       read_protocol_X(SocketFD,sizef,nick,x,y);
@@ -111,10 +111,10 @@ void my_write(int SocketFD){
       }
       else{
         int x=U[yo]->startx;
-      int y=U[yo]->starty;
-      movimientoPersonaje3(ch,x,y);
-      string wp_X=write_protocol_X(yo,x,y);
-      my_writeSimple(SocketFD,wp_X);
+        int y=U[yo]->starty;
+        movimientoPersonaje3(ch,x,y);
+        string wp_X=write_protocol_X(yo,x,y);
+        my_writeSimple(SocketFD,wp_X);
       //cout<<win.startx<<endl;
       //cout<<win.starty<<endl;
       }
