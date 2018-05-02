@@ -68,8 +68,15 @@ void my_read(int SocketFD){
         movimientoPersonaje2(x,y,U[nick]);  
       }
       
-        //cout<<"ch: "<<ch<<endl;
-      
+        //cout<<"ch: "<<ch<<endl;      
+    }
+    else if(tipo=='O'){//Un jugador perdio
+      string perdedor=read_protocol_RGame(SocketFD,sizef);
+      create_box(U[perdedor],FALSE);
+    }
+    else if(tipo=='E'){
+      cout<<"GAME OVER"<<endl;
+      break;
     }
 
   }
@@ -99,7 +106,12 @@ void my_write(int SocketFD){
         ch=1111;
         string wp_P=write_protocol_R(to_string(ch));
         my_writeSimple(SocketFD,wp_P);
-
+      }
+      else if(ch==27){
+        string wp_P=write_protocol_E();
+        my_writeSimple(SocketFD,wp_P);
+        //shutdown(SocketFD, SHUT_RDWR);
+         break;
       }
       else{
         int x=U[yo]->startx;

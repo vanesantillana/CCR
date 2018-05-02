@@ -294,6 +294,11 @@ void read_protocol_X(int SocketFD,int sizef,string &nick,int &x,int &y){
   y=atoi(bufferY);
 }
 
+string write_protocol_O(string nick){ //Salir o game over
+  string action = complete_zero(nick.size(),nbytes)+"R"+nick;
+  return action;
+}
+
 
 
 
@@ -491,5 +496,3 @@ void movimientoPersonaje3(int ch,int &x,int &y){
         break;
   }
 }
-
-
