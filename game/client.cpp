@@ -3,8 +3,7 @@
 using  namespace std; 
 
 WinMap U;
-string yo;
-WIN *vidas;
+WIN vidas;
 
 void my_read(int SocketFD){  
   while(1){
@@ -24,7 +23,6 @@ void my_read(int SocketFD){
         noecho();
         init_win_params(U[nick]);
         create_box(U[nick], TRUE);
-        //create_legend(vidas);
       }
       
     }
@@ -96,7 +94,9 @@ void my_write(int SocketFD){
   //    attron(COLOR_PAIR(1));
   //    attroff(COLOR_PAIR(1));
   create_box(U[yo], TRUE);
-   
+  init_win_params_legend(&vidas);
+  create_legend(&vidas);
+
   while(1){
     int ch;
     while((ch = getch()) != KEY_F(1)){
@@ -120,9 +120,8 @@ void my_write(int SocketFD){
       my_writeSimple(SocketFD,wp_X);
       //cout<<win.startx<<endl;
       //cout<<win.starty<<endl;
-      
       }
-      
+      create_legend(&vidas);      
     }
     
     //}
@@ -179,6 +178,7 @@ int main(void)
   yo=nombreUsuario;
   string wp_P=write_protocol_L(nombreUsuario);
   my_writeSimple(SocketFD,wp_P);
+  
 
   thread t[2];
   t[0]=thread(my_read,SocketFD);
