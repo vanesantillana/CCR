@@ -99,7 +99,7 @@ char getTypeProtocol(int SocketFD,int &size){
   //cout<<"Protocolo:"<<buffer[0]<<endl;
   return buffer[0];
 }
-
+/*
 void my_read2(int SocketFD,char* &buffer){
   int n=read(SocketFD,buffer,nbytes);
   if (n < 0) perror("error reading size");
@@ -116,7 +116,7 @@ void my_write2(int SocketFD,string msg){
   msg=complete_zero(msg.size(),nbytes) + msg; 
   write(SocketFD,msg.c_str(),msg.size());
 }
-
+*/
 void my_writeSimple(int SocketFD,string msg){
   
   write(SocketFD,msg.c_str(),msg.size());
