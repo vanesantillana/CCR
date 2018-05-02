@@ -24,12 +24,7 @@ string printMap(){
 
 
 void nuevoUsuario( int ConnectFD){
-  //  string menu="\n----------------------------\nMENU\n 1. [Action P] Print list of user on the chat\n 2. [Action L] Login to the chat\n 3. [Action C] Send a msg to an user on the chat\n 4. [Action F] Send File \n 6. [Action E] End chat or logout from chat \n----------------------------";
-
-  //string mensaje=write_protocol_R("Bienvenido al juego\n-------------------");
-  
   WIN win;
-  //    WIN win2;
   int sizef; 
   char tipo=getTypeProtocol(ConnectFD,sizef);
   string nick=read_protocol_L(ConnectFD,sizef);
@@ -38,17 +33,16 @@ void nuevoUsuario( int ConnectFD){
   sendAllMap(Users,nick2);
   int ch;
 
-  initscr();                      /* Start curses mode            */
-  start_color();                  /* Start the color functionality */
-  cbreak();                       /* Line buffering disabled, Pass on*/
-  keypad(stdscr, TRUE);           /* I need that nifty F1         */
+  initscr();                      
+  start_color();                  
+  cbreak();                       
+  keypad(stdscr, TRUE);           
   noecho();
   init_win_params(&win);
   create_box(&win, TRUE);
-  //my_writeSimple(ConnectFD,mensaje);
+  
 
   while(true){ 
-    //my_writeSimple(ConnectFD,menu);
     tipo=getTypeProtocol(ConnectFD,sizef);
     if (tipo == 'R'){
       string msj;
@@ -56,7 +50,6 @@ void nuevoUsuario( int ConnectFD){
       int ch=atoi(nv.c_str());
       movimientoPersonaje(ch,&win);
       string msgForAll=write_protocol_C(nick,nv);
-      //nv=write_protocol_R(nick+" dice: "+nv);
       sendAllMap(Users,msgForAll);
     }
     else if(tipo == 'X'){
@@ -68,13 +61,11 @@ void nuevoUsuario( int ConnectFD){
       sendAllMap(Users,nuevoMensaje);
     }
     else if (tipo == 'E'){
-     //shutdown(ConnectFD, SHUT_RDWR);
     string game_over=write_protocol_O(nick);
     sendAllMap(Users,game_over);
      string key=findInMap(Users,ConnectFD);
      Users.erase(key);
      create_box(&win,FALSE);
-    //Indicar a los demas para q borren mi personaje    
      my_writeSimple(ConnectFD,write_protocol_E());
      close(ConnectFD);
      break;
@@ -127,12 +118,5 @@ int main(void){
 
   for(int h=0;h<cont;h++)
     t[h].join();
-  
-  //shutdown(ConnectFD, SHUT_RDWR);  
-  //close(ConnectFD);
-     
-  
-  
-  //close(SocketFD);
   return 0;
 }

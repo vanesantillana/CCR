@@ -28,7 +28,7 @@ typedef map<string,WIN*> WinMap;
 
 
 typedef map<string,int> StringMap;
-int puerto=218;
+int puerto=219;
 int size=10240;
 int nbytes=4;
 thread bullets[1000000];
@@ -92,11 +92,9 @@ int getSize(char*buffer,int i,int f){
 char getTypeProtocol(int SocketFD,int &size){
   char buffer[5];
   int n=read(SocketFD,buffer,4);
-  //cout<<"buffer recibido: "<<buffer<<endl;
   if (n < 0) perror("error reading size");
   size = atoi_first_block(buffer);
   n=read(SocketFD,buffer,1);
-  //cout<<"Protocolo:"<<buffer[0]<<endl;
   return buffer[0];
 }
 
@@ -133,15 +131,12 @@ string write_protocol_R(string msg){
 }
  
 void read_protocol_R(int SocketFD,int sizef){
-  //cout<<"size:"<<sizef<<endl;
   char buffer[sizef+1];
   int n = read(SocketFD, buffer, sizef);
   if (n < 0) perror("error reading message");
   cout<<charToString(buffer,sizef)<<endl;
   
 }
-
-
 
 //Action P: print list of user on the chat
 string write_protocol_P(){
@@ -159,14 +154,12 @@ string read_protocol_L(int SocketFD,int sizef){
   char buffer[sizef];
   int n = read(SocketFD, buffer, sizef);
   string nick=charToString(buffer,sizef);
-  //cout<<"Nickname: "<<nickname<<endl;
   return nick;
 }
 
 
 //Action C: send a msg to a user on the chat
 string write_protocol_C(string nickname, string msg){
-  //cout << "Action C" << endl;
   string action = complete_zero(msg.size(),nbytes) +"C" + 
                   complete_zero(nickname.size(),2) +nickname + msg;
   return action;
@@ -188,7 +181,6 @@ string read_protocol_C(int SocketFD,int sizef,string &receptor){
 
 // Action E: End chat or logout from chat 
 string write_protocol_E(){
-  //cout << "Action E" << endl;
   string action = complete_zero(1, nbytes) +"E";
   return action;
 }
@@ -199,9 +191,6 @@ string write_protocol_E(){
 string write_protocol_F(string nick,string filename){
   string msg=complete_zero(filename.size(),nbytes) +"F" + 
     complete_zero(nick.size(),2) +nick+ filename;
-
-  //Leer archivo
-  //ifstream infile ("hack.jpg",ifstream::binary);
   cout<<"file name"<<filename<<endl;
   ifstream infile (filename,ifstream::binary);
   infile.seekg (0,infile.end);
@@ -215,10 +204,6 @@ string write_protocol_F(string nick,string filename){
   for(int x=0;x<size;x++){
     msg=msg+buffer[x];
   }
-
-  //cout<<"mesaje original:"<<msg<<endl;
-  //cout<<"size enviado: "<<size<<endl;
-  //cout<<"esto estoy enviando:"<<msg<<endl;
   return msg;
 }
 
@@ -230,12 +215,9 @@ string read_protocol_F(int SocketFD,int sizef){
   int sizeNick=atoi(buffer2);
   char bufferNick[sizeNick+1];
   n=read(SocketFD,bufferNick,sizeNick);
-  //  receptor=bufferNick;
   char bufferMsg[sizef];
   n=read(SocketFD,bufferMsg,sizef);
-  
   string nombreArchivo=charToString(bufferMsg,sizef);
-  
   char buffer3[4];
   n=read(SocketFD,buffer3,4);
   int sizeFile=atoi(buffer3);
@@ -245,17 +227,13 @@ string read_protocol_F(int SocketFD,int sizef){
   ofstream outfile (nombreArchivo,ofstream::binary);
   outfile.write (bufferFile,sizeFile);
   outfile.close();
-  
-  //return msg;
 }
 
 
 string read_protocol_D(int SocketFD,int sizef,string &receptor,string newNick){
   char buffer2[3];
   int n = read(SocketFD, buffer2,2);
-  int sizeNick=atoi(buffer2);
-
-  
+  int sizeNick=atoi(buffer2);  
   char bufferNick[sizeNick];
   n=read(SocketFD,bufferNick,sizeNick);
   receptor=bufferNick;
@@ -333,7 +311,6 @@ void sendAllMap(StringMap mapa,string msj){
 void init_win_params(WIN *p_win);
 void print_win_params(WIN *p_win){}
 void create_box(WIN *win, bool flag);
-//void bullet(WIN *p_win){}
 
 void init_win_params(WIN *p_win){
   p_win->height = 8;
@@ -475,7 +452,6 @@ void create_bullet(WIN *win2,WIN *win){
           }
 
         }
-        //sleep(microseconds);
         for(j = y; j <= y + 2; ++j)
           for(i = x; i <= x + 2; ++i)
         mvaddch(j, i, ' ');
@@ -519,7 +495,7 @@ void movimientoPersonaje(int ch,WIN *win){
         keypad(stdscr, TRUE);           
         noecho();     
         init_win_params_bullet(&win2);
-
+        cout<<"yo:"<<yo<<" vida: "<<vida<<endl;
         bullets[contB]=thread(create_bullet,U[yo],win);
         contB++;
 
