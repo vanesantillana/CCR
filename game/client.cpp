@@ -67,6 +67,7 @@ void my_read(int SocketFD){
     else if(tipo=='O'){//Un jugador perdio
       string perdedor=read_protocol_RGame(SocketFD,sizef);
       create_box(U[perdedor],FALSE);
+      cout<<perdedor<<" MURIOOO!"<<endl;
     }
     else if(tipo=='E'){
       cout<<"GAME OVER"<<endl;
@@ -147,7 +148,7 @@ int main(void)
  
   stSockAddr.sin_family = AF_INET;
   stSockAddr.sin_port = htons(puerto);
-  //Res = inet_pton(AF_INET, "192.168.197.95", &stSockAddr.sin_addr);
+  //Res = inet_pton(AF_INET, "192.168.1.35", &stSockAddr.sin_addr);
   Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
  
   if (0 > Res)
@@ -176,7 +177,7 @@ int main(void)
   string wp_P=write_protocol_L(nombreUsuario);
   my_writeSimple(SocketFD,wp_P);
   
-
+  SocketGlobal=SocketFD;
   thread t[2];
   t[0]=thread(my_read,SocketFD);
   t[1]=thread(my_write,SocketFD);

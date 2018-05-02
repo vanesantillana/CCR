@@ -38,6 +38,7 @@ int total_vidas=vida;
 string yo;
 WinMap U;
 WIN vidas;
+int SocketGlobal;
 
 string charToString(char*buffer,int sizef){
   string resp;
@@ -468,6 +469,11 @@ void create_bullet(WIN *win2,WIN *win){
         if(choque(win2,x,y) and primerDisparo){
           --vida;
           primerDisparo=false;
+          if(vida<=0){
+            string wp_P=write_protocol_E();
+            my_writeSimple(SocketGlobal,wp_P);
+          }
+
         }
         //sleep(microseconds);
         for(j = y; j <= y + 2; ++j)
