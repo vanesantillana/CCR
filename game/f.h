@@ -19,6 +19,7 @@ int nbytes=4;
 thread bullets[1000000];
 int contB=0;
 int vida=5;
+string yo;
 
 string charToString(char*buffer,int sizef){
   string resp;
@@ -366,17 +367,29 @@ void create_box(WIN *p_win, bool flag){
   refresh();
 }
 
+//Leyenda de vidas
+
+void init_win_params_legend(WIN *p_win){
+  p_win->height = 1;
+  p_win->width = 5;
+  p_win->starty = 0;
+  p_win->startx = 0;
+  p_win->border.ls = '|';
+  p_win->border.rs = '|';
+  p_win->border.ts = '-';
+  p_win->border.bs = '-';
+  p_win->border.tl = '+';
+  p_win->border.tr = '+';
+  p_win->border.bl = '+';
+  p_win->border.br = '+';
+}
 
 void create_legend(WIN *p_win){
   int i, j;
-  int x, y, w, h;
-  x = p_win->startx;
-  y = p_win->starty;
-  w = p_win->width;
-  h = p_win->height;
-  for(i = 0; i <= vida; ++i)
-      move(0,i); addstr("|");
-
+  move(0,0); addstr("VIDAS:");  
+  for(i = 6; i <vida+6; ++i){
+      move(0,i); addstr("| ");
+  }
 	mvaddch(j, i, ' ');
   refresh();
 }
@@ -407,20 +420,18 @@ void init_win_params_bullet(WIN *p_win){
 }
 
 unsigned int microseconds=1;
-void create_bullet(WIN *p_win,WIN *win){
+void create_bullet(WIN *win){
     int i, j;
     int x, y, w, h;
     x = win->startx+7;
     y = win->starty-2;
-    w = p_win->width;
-    h = p_win->height;
+    
     for(int it=0;it<10;it++){
-         move( y+0,x ); addstr("oo");
+        move( y+0,x ); addstr("oo");
         move( y+1,x ); addstr("oo");
         mvaddch(j, i, ' ');
       refresh();  
       for(int xt=0;xt<10000000;xt++);
-
       //sleep(microseconds);
       for(j = y; j <= y + 2; ++j)
         for(i = x; i <= x + 2; ++i)
@@ -467,7 +478,7 @@ void movimientoPersonaje(int ch,WIN *win){
         noecho();     
         init_win_params_bullet(&win2);
 
-        bullets[contB]=thread(create_bullet,&win2,win);
+        bullets[contB]=thread(create_bullet,win);
         contB++;
 
         break;
