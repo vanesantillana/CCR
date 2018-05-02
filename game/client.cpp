@@ -1,5 +1,4 @@
 //g++ client.cpp -o cli -std=c++11 -pthread -lncurses
-
 #include "f.h"
 using  namespace std; 
 
@@ -82,10 +81,10 @@ void my_write(int SocketFD){
   U[yo]=new WIN;
   //WIN win;
   int ch;
-  initscr();                      /* Start curses mode            */
-  start_color();                  /* Start the color functionality */
-  cbreak();                       /* Line buffering disabled, Pass on*/
-  keypad(stdscr, TRUE);           /* I need that nifty F1         */
+  initscr();
+  start_color();
+  cbreak();           
+  keypad(stdscr, TRUE);
   noecho();     
   init_win_params(U[yo]);
   //    print_win_params(&win);
