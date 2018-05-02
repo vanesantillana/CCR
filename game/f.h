@@ -12,14 +12,32 @@
 #include <ncurses.h>  
 #include <chrono>
 using namespace std;
+
+typedef struct _win_border_struct {
+  chtype  ls, rs, ts, bs,
+    tl, tr, bl, br;
+}WIN_BORDER;
+typedef struct _WIN_struct {
+  int startx, starty;
+  int height, width;
+  WIN_BORDER border;
+}WIN;
+
+
+typedef map<string,WIN*> WinMap;
+
+
 typedef map<string,int> StringMap;
-int puerto=215;
+int puerto=217;
 int size=10240;
 int nbytes=4;
 thread bullets[1000000];
 int contB=0;
-int vida=5;
+int vida=20;
+int total_vidas=vida;
 string yo;
+WinMap U;
+WIN vidas;
 
 string charToString(char*buffer,int sizef){
   string resp;
@@ -310,22 +328,7 @@ void sendAllMap(StringMap mapa,string msj){
     it++;
   }
 }
-//////////////////////////////////////////
-//JUEGOOO/////////////////////////////////
-//////////////////////////////////////////
 
-typedef struct _win_border_struct {
-  chtype  ls, rs, ts, bs,
-    tl, tr, bl, br;
-}WIN_BORDER;
-typedef struct _WIN_struct {
-  int startx, starty;
-  int height, width;
-  WIN_BORDER border;
-}WIN;
-
-
-typedef map<string,WIN*> WinMap;
 void init_win_params(WIN *p_win);
 void print_win_params(WIN *p_win){}
 void create_box(WIN *win, bool flag);
@@ -390,12 +393,14 @@ void init_win_params_legend(WIN *p_win){
 }
 
 void create_legend(WIN *p_win){
-  int i, j;
+  int i;
+  for(i = 6; i <total_vidas+6; ++i)
+	mvaddch(0, i, ' ');
   move(0,0); addstr("VIDAS:");  
   for(i = 6; i <vida+6; ++i){
-      move(0,i); addstr("| ");
+      move(0,i); addstr("|");
   }
-	mvaddch(j, i, ' ');
+  
   refresh();
 }
 
@@ -423,9 +428,31 @@ void init_win_params_bullet(WIN *p_win){
   p_win->border.bl = '+';
   p_win->border.br = '+';
 }
+bool choque(WIN *win,WIN *bullet){
+  
+  
+  int x1,y1,h1,w1,
+      x2,y2,h2,w2;
+  /*x1= win->startx;
+  y1= win->starty; 
+  w1= x1 + win->width; 
+  h1= h1 + win->height;
+
+  x2= bullet->startx;
+  y2= bullet->starty;
+  w2= x2 + bullet->width;
+  h2= h2 + bullet->height;
+  
+  /*if((y2 >= y1 && y2<=h1) && (x2>=x1 && x2<=w1)){
+    if(w2 >= y1 && w2<=h1 ){
+      return true;
+    }
+  }*/
+  return true;
+} 
 
 unsigned int microseconds=1;
-void create_bullet(WIN *win){
+void create_bullet(WIN *win2,WIN *win){
     int i, j;
     int x, y, w, h;
     x = win->startx+7;
@@ -437,16 +464,16 @@ void create_bullet(WIN *win){
         mvaddch(j, i, ' ');
       refresh();  
       for(int xt=0;xt<10000000;xt++);
+      if(choque(U[yo],win2)){
+        --vida;
+      }
       //sleep(microseconds);
       for(j = y; j <= y + 2; ++j)
         for(i = x; i <= x + 2; ++i)
       mvaddch(j, i, ' ');
       refresh();
       y=y-2; 
-    }
-    
-    
-  
+    }  
 }
 
 
@@ -483,7 +510,7 @@ void movimientoPersonaje(int ch,WIN *win){
         noecho();     
         init_win_params_bullet(&win2);
 
-        bullets[contB]=thread(create_bullet,win);
+        bullets[contB]=thread(create_bullet,&win2,win);
         contB++;
 
         break;
