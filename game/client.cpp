@@ -93,7 +93,7 @@ void my_write(int SocketFD){
   create_box(U[yo], TRUE);
   init_win_params_legend(&vidas);
   create_legend(&vidas);
-
+  
   while(1){
     int ch;
     while((ch = getch()) != KEY_F(1)){
