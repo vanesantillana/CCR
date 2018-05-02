@@ -59,7 +59,7 @@ void nuevoUsuario( int ConnectFD){
       //nv=write_protocol_R(nick+" dice: "+nv);
       sendAllMap(Users,msgForAll);
     }
-    if(tipo == 'X'){
+    else if(tipo == 'X'){
       int x, y;
       string nickNuevo;
       read_protocol_X(ConnectFD,sizef,nickNuevo,x,y);
@@ -67,6 +67,18 @@ void nuevoUsuario( int ConnectFD){
       string nuevoMensaje=write_protocol_X(nick,x,y);                                                 
       sendAllMap(Users,nuevoMensaje);
     }
+    else if (tipo == 'E'){
+     //shutdown(ConnectFD, SHUT_RDWR);
+     my_writeSimple(ConnectFD,write_protocol_E());
+     string key=findInMap(Users,ConnectFD);
+     Users.erase(key);
+     create_box(&win,FALSE);
+    //Indicar a los demas para q borren mi personaje    
+    string game_over=write_protocol_O(nick);
+      sendAllMap(Users,game_over);
+     close(ConnectFD);
+     break;
+   }
   }
 }
 
