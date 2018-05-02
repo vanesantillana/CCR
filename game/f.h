@@ -28,12 +28,12 @@ typedef map<string,WIN*> WinMap;
 
 
 typedef map<string,int> StringMap;
-int puerto=218;
+int puerto=219;
 int size=10240;
 int nbytes=4;
 thread bullets[1000000];
 int contB=0;
-int vida=20;
+int vida=5;
 int total_vidas=vida;
 string yo;
 WinMap U;
@@ -466,7 +466,7 @@ void create_bullet(WIN *win2,WIN *win){
       for(int xt=0;xt<10000000;xt++);
       if(choque(win2,x,y)){
         --vida;
-         
+        return;
       }
       //sleep(microseconds);
       for(j = y; j <= y + 2; ++j)
