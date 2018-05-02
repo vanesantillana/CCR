@@ -28,7 +28,7 @@ typedef map<string,WIN*> WinMap;
 
 
 typedef map<string,int> StringMap;
-int puerto=219;
+int puerto=218;
 int size=10240;
 int nbytes=4;
 thread bullets[1000000];
@@ -457,23 +457,25 @@ void create_bullet(WIN *win2,WIN *win){
     int x, y, w, h;
     x = win->startx+7;
     y = win->starty-2;
-    
-    for(int it=0;it<10;it++){
+    bool primerDisparo=true;
+    for(int it=0;it<1000;it++){
+      if(y>0){
         move( y+0,x ); addstr("oo");
         move( y+1,x ); addstr("oo");
         mvaddch(j, i, ' ');
-      refresh();  
-      for(int xt=0;xt<10000000;xt++);
-      if(choque(win2,x,y)){
-        --vida;
-        return;
+        refresh();  
+        for(int xt=0;xt<10000000;xt++);
+        if(choque(win2,x,y) and primerDisparo){
+          --vida;
+          primerDisparo=false;
+        }
+        //sleep(microseconds);
+        for(j = y; j <= y + 2; ++j)
+          for(i = x; i <= x + 2; ++i)
+        mvaddch(j, i, ' ');
+        refresh();
+        y=y-2;
       }
-      //sleep(microseconds);
-      for(j = y; j <= y + 2; ++j)
-        for(i = x; i <= x + 2; ++i)
-      mvaddch(j, i, ' ');
-      refresh();
-      y=y-2; 
     }  
 }
 
