@@ -26,7 +26,7 @@ string printMap(){
 void nuevoUsuario( int ConnectFD){
   //  string menu="\n----------------------------\nMENU\n 1. [Action P] Print list of user on the chat\n 2. [Action L] Login to the chat\n 3. [Action C] Send a msg to an user on the chat\n 4. [Action F] Send File \n 6. [Action E] End chat or logout from chat \n----------------------------";
 
-  string mensaje=write_protocol_R("Bienvenido al juego\n-------------------");
+  //string mensaje=write_protocol_R("Bienvenido al juego\n-------------------");
   
   WIN win;
   //    WIN win2;
@@ -45,7 +45,7 @@ void nuevoUsuario( int ConnectFD){
   noecho();
   init_win_params(&win);
   create_box(&win, TRUE);
-  my_writeSimple(ConnectFD,mensaje);
+  //my_writeSimple(ConnectFD,mensaje);
 
   while(true){ 
     //my_writeSimple(ConnectFD,menu);
