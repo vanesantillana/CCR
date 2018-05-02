@@ -3,9 +3,6 @@
 #include "f.h"
 using  namespace std; 
 
-WinMap U;
-WIN vidas;
-
 void my_read(int SocketFD){  
   while(1){
     int sizef;
