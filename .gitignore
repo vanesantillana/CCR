@@ -1,3 +1,4 @@
 .vscode
-game/cli
+.directory
 game/serve
+game/cli

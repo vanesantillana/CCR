@@ -28,12 +28,12 @@ typedef map<string,WIN*> WinMap;
 
 
 typedef map<string,int> StringMap;
-int puerto=217;
+int puerto=218;
 int size=10240;
 int nbytes=4;
 thread bullets[1000000];
 int contB=0;
-int vida=20;
+int vida=5;
 int total_vidas=vida;
 string yo;
 WinMap U;
@@ -314,7 +314,7 @@ void read_protocol_X(int SocketFD,int sizef,string &nick,int &x,int &y){
 }
 
 string write_protocol_O(string nick){ //Salir o game over
-  string action = complete_zero(nick.size(),nbytes)+"R"+nick;
+  string action = complete_zero(nick.size(),nbytes)+"O"+nick;
   return action;
 }
 
@@ -428,27 +428,27 @@ void init_win_params_bullet(WIN *p_win){
   p_win->border.bl = '+';
   p_win->border.br = '+';
 }
-bool choque(WIN *win,WIN *bullet){
-  
-  
-  int x1,y1,h1,w1,
+bool choque(WIN *win,int x,int y){
+  if(U[yo]!=nullptr){
+    int x1,y1,h1,w1,
       x2,y2,h2,w2;
-  /*x1= win->startx;
-  y1= win->starty; 
-  w1= x1 + win->width; 
-  h1= h1 + win->height;
-
-  x2= bullet->startx;
-  y2= bullet->starty;
-  w2= x2 + bullet->width;
-  h2= h2 + bullet->height;
-  
-  /*if((y2 >= y1 && y2<=h1) && (x2>=x1 && x2<=w1)){
-    if(w2 >= y1 && w2<=h1 ){
-      return true;
-    }
-  }*/
-  return true;
+      x1= win->startx;
+      y1= win->starty; 
+      w1= x1 + win->width; 
+      h1= h1 + win->height;
+    
+      x2= x;
+      y2= y;
+      w2= x2 +2;
+      h2= h2 + 2;
+      
+      if((y2 >= y1 && y2<=h1) && (x2>=x1 && x2<=w1)){
+        if(w2 >= y1 && w2<=h1 ){
+          return true;
+        }
+      }
+  }  
+  return false;
 } 
 
 unsigned int microseconds=1;
@@ -457,22 +457,25 @@ void create_bullet(WIN *win2,WIN *win){
     int x, y, w, h;
     x = win->startx+7;
     y = win->starty-2;
-    
-    for(int it=0;it<10;it++){
+    bool primerDisparo=true;
+    for(int it=0;it<1000;it++){
+      if(y>0){
         move( y+0,x ); addstr("oo");
         move( y+1,x ); addstr("oo");
         mvaddch(j, i, ' ');
-      refresh();  
-      for(int xt=0;xt<10000000;xt++);
-      if(choque(U[yo],win2)){
-        --vida;
+        refresh();  
+        for(int xt=0;xt<10000000;xt++);
+        if(choque(win2,x,y) and primerDisparo){
+          --vida;
+          primerDisparo=false;
+        }
+        //sleep(microseconds);
+        for(j = y; j <= y + 2; ++j)
+          for(i = x; i <= x + 2; ++i)
+        mvaddch(j, i, ' ');
+        refresh();
+        y=y-2;
       }
-      //sleep(microseconds);
-      for(j = y; j <= y + 2; ++j)
-        for(i = x; i <= x + 2; ++i)
-      mvaddch(j, i, ' ');
-      refresh();
-      y=y-2; 
     }  
 }
 
@@ -511,7 +514,7 @@ void movimientoPersonaje(int ch,WIN *win){
         noecho();     
         init_win_params_bullet(&win2);
 
-        bullets[contB]=thread(create_bullet,&win2,win);
+        bullets[contB]=thread(create_bullet,U[yo],win);
         contB++;
 
         break;

@@ -69,13 +69,13 @@ void nuevoUsuario( int ConnectFD){
     }
     else if (tipo == 'E'){
      //shutdown(ConnectFD, SHUT_RDWR);
-     my_writeSimple(ConnectFD,write_protocol_E());
+    string game_over=write_protocol_O(nick);
+    sendAllMap(Users,game_over);
      string key=findInMap(Users,ConnectFD);
      Users.erase(key);
      create_box(&win,FALSE);
     //Indicar a los demas para q borren mi personaje    
-    string game_over=write_protocol_O(nick);
-      sendAllMap(Users,game_over);
+     my_writeSimple(ConnectFD,write_protocol_E());
      close(ConnectFD);
      break;
    }
