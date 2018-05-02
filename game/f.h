@@ -99,7 +99,7 @@ char getTypeProtocol(int SocketFD,int &size){
   //cout<<"Protocolo:"<<buffer[0]<<endl;
   return buffer[0];
 }
-
+/*
 void my_read2(int SocketFD,char* &buffer){
   int n=read(SocketFD,buffer,nbytes);
   if (n < 0) perror("error reading size");
@@ -116,7 +116,7 @@ void my_write2(int SocketFD,string msg){
   msg=complete_zero(msg.size(),nbytes) + msg; 
   write(SocketFD,msg.c_str(),msg.size());
 }
-
+*/
 void my_writeSimple(int SocketFD,string msg){
   
   write(SocketFD,msg.c_str(),msg.size());
@@ -393,6 +393,7 @@ void init_win_params_legend(WIN *p_win){
   p_win->border.br = '+';
 }
 
+
 void create_legend(WIN *p_win){
   int i;
   for(i = 6; i <total_vidas+6; ++i)
@@ -401,7 +402,6 @@ void create_legend(WIN *p_win){
   for(i = 6; i <vida+6; ++i){
       move(0,i); addstr("|");
   }
-  
   refresh();
 }
 
