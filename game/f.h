@@ -425,7 +425,7 @@ void create_bullet(WIN *p_win,WIN *win){
         mvaddch(j, i, ' ');
       refresh();  
       for(int xt=0;xt<10000000;xt++);
-
+      
       //sleep(microseconds);
       for(j = y; j <= y + 2; ++j)
         for(i = x; i <= x + 2; ++i)
@@ -437,6 +437,7 @@ void create_bullet(WIN *p_win,WIN *win){
     
   
 }
+
 
 
 
