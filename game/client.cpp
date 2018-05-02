@@ -5,6 +5,7 @@ using  namespace std;
 
 WinMap U;
 string yo;
+WIN *vidas;
 
 void my_read(int SocketFD){  
   while(1){
@@ -24,6 +25,7 @@ void my_read(int SocketFD){
         noecho();
         init_win_params(U[nick]);
         create_box(U[nick], TRUE);
+        //create_legend(vidas);
       }
       
     }
@@ -102,9 +104,9 @@ void my_write(int SocketFD){
       else{
         int x=U[yo]->startx;
       int y=U[yo]->starty;
-      movimientoPersonaje2(ch,x,y);
-      string wp_P=write_protocol_X(yo,x,y);
-      my_writeSimple(SocketFD,wp_P);
+      movimientoPersonaje3(ch,x,y);
+      string wp_X=write_protocol_X(yo,x,y);
+      my_writeSimple(SocketFD,wp_X);
       //cout<<win.startx<<endl;
       //cout<<win.starty<<endl;
       
