@@ -478,6 +478,7 @@ void create_bullet(WIN *win2,WIN *win){
 
 
 
+
 void movimientoPersonaje(int ch,WIN *win){
   switch(ch){
     case KEY_LEFT:
