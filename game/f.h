@@ -392,6 +392,7 @@ void init_win_params_legend(WIN *p_win){
   p_win->border.br = '+';
 }
 
+
 void create_legend(WIN *p_win){
   int i;
   for(i = 6; i <total_vidas+6; ++i)
@@ -400,7 +401,6 @@ void create_legend(WIN *p_win){
   for(i = 6; i <vida+6; ++i){
       move(0,i); addstr("|");
   }
-  
   refresh();
 }
 
